@@ -1,4 +1,6 @@
-### Шаблон для верстки
+### Simple draw app
+
+<a href="https://andreyuytov.github.io/drawing-app">Посмотреть проект</a>
 
 Для установки зависимостей
 

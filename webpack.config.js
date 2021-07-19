@@ -63,7 +63,7 @@ module.exports = (env) => {
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.(js | ts)$/,
           exclude: /node_modules/,
           use: [
             {
@@ -77,6 +77,11 @@ module.exports = (env) => {
               },
             },
           ],
+        },
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
         },
         {
           test: /\.scss$/,
