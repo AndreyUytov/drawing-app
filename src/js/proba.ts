@@ -65,10 +65,43 @@ class CanvasApp {
 
     this.figure = new CanvasLine()
 
-    this.canvas.addEventListener('pointerdown', this.onCanvasPointerDown)
+    this.canvas.addEventListener('pointerdown', this.onCanvasPointerDownAndDrawBrush)
   }
 
-  onCanvasPointerDown = (evt: PointerEvent) => {
+  onCanvasPointerDownAndDrawBrush = (evt:PointerEvent) => {
+    evt.preventDefault()
+    let startX = evt.clientX
+    let startY = evt.clientY    
+
+    this.context.moveTo(startX, startY)
+
+    let onCanvasPointerMove = (evt: PointerEvent) => {
+      evt.preventDefault() 
+        
+      this.context.lineTo(evt.clientX, evt.clientY)
+      this.context.stroke() 
+    }
+
+    let onCanvasPointerUp = (evt: PointerEvent) => {
+      evt.preventDefault()   
+      this.canvas.removeEventListener('pointerout', onCanvasPointerOut)
+      this.canvas.removeEventListener('pointermove', onCanvasPointerMove)
+      this.canvas.removeEventListener('pointerup', onCanvasPointerUp)
+    }
+
+    let onCanvasPointerOut = () => {   
+      evt.preventDefault()     
+      this.canvas.removeEventListener('pointerout', onCanvasPointerOut)
+      this.canvas.removeEventListener('pointermove', onCanvasPointerMove)
+      this.canvas.removeEventListener('pointerup', onCanvasPointerUp)
+    }
+
+    this.canvas.addEventListener('pointerout', onCanvasPointerOut)
+    this.canvas.addEventListener('pointermove', onCanvasPointerMove)
+    this.canvas.addEventListener('pointerup', onCanvasPointerUp)
+  }
+
+  onCanvasPointerDownAndDrawFigure = (evt: PointerEvent) => {
     evt.preventDefault()
     let startX = evt.clientX
     let startY = evt.clientY
