@@ -42,8 +42,9 @@ class CanvasLine implements Figure {
 
 class CanvasApp {
   private canvas: HTMLCanvasElement
+  private subCanvas: HTMLCanvasElement
   private context: CanvasRenderingContext2D
-  private paint: Boolean
+  private subContext: CanvasRenderingContext2D
 
   public figure: Figure
   public width: number
@@ -52,28 +53,39 @@ class CanvasApp {
   public lineWidth: number = 4
 
   constructor() {
-    this.canvas = document.getElementById('interface') as HTMLCanvasElement
+    this.subCanvas = document.getElementById('sub-canvas') as HTMLCanvasElement
+    this.canvas = document.getElementById('canvas') as HTMLCanvasElement
+    this.subContext = this.subCanvas.getContext("2d")
     this.context = this.canvas.getContext("2d")
 
-    this.width = this.canvas.width = innerWidth
-    this.height = this.canvas.height = innerHeight
+    this.width = this.canvas.width = this.subCanvas.width = innerWidth
+    this.height = this.canvas.height =  this.subCanvas.height = innerHeight
 
     this.context.lineCap = 'round';
     this.context.lineJoin = 'round';
     this.context.strokeStyle = this.strokeColor;
     this.context.lineWidth = this.lineWidth;
 
-    this.figure = new CanvasLine()
+    this.subContext.lineCap = 'round';
+    this.subContext.lineJoin = 'round';
+    this.subContext.strokeStyle = `rgba(0,0,0,0.4)`;
+    this.subContext.lineWidth = this.lineWidth;
+    this.subContext.setLineDash([4, 8])
 
-    this.canvas.addEventListener('pointerdown', this.onCanvasPointerDownAndDrawBrush)
+    this.figure = new CanvasCircle()
+
+    this.canvas.addEventListener('pointerdown', this.onCanvasPointerDownAndDrawFigure)
   }
 
   onCanvasPointerDownAndDrawBrush = (evt:PointerEvent) => {
     evt.preventDefault()
-    let startX = evt.clientX
-    let startY = evt.clientY    
+    this.context.moveTo(evt.clientX, evt.clientY)
 
-    this.context.moveTo(startX, startY)
+    let resetListeners = () => {
+      this.canvas.removeEventListener('pointerout', onCanvasPointerOut)
+      this.canvas.removeEventListener('pointermove', onCanvasPointerMove)
+      this.canvas.removeEventListener('pointerup', onCanvasPointerUp)
+    }
 
     let onCanvasPointerMove = (evt: PointerEvent) => {
       evt.preventDefault() 
@@ -84,16 +96,14 @@ class CanvasApp {
 
     let onCanvasPointerUp = (evt: PointerEvent) => {
       evt.preventDefault()   
-      this.canvas.removeEventListener('pointerout', onCanvasPointerOut)
-      this.canvas.removeEventListener('pointermove', onCanvasPointerMove)
-      this.canvas.removeEventListener('pointerup', onCanvasPointerUp)
+
+      resetListeners()
     }
 
     let onCanvasPointerOut = () => {   
-      evt.preventDefault()     
-      this.canvas.removeEventListener('pointerout', onCanvasPointerOut)
-      this.canvas.removeEventListener('pointermove', onCanvasPointerMove)
-      this.canvas.removeEventListener('pointerup', onCanvasPointerUp)
+      evt.preventDefault()   
+
+      resetListeners()
     }
 
     this.canvas.addEventListener('pointerout', onCanvasPointerOut)
@@ -106,28 +116,38 @@ class CanvasApp {
     let startX = evt.clientX
     let startY = evt.clientY
 
+    let resetListeners = () => {
+      this.canvas.removeEventListener('pointerout', onCanvasPointerOut)
+      this.canvas.removeEventListener('pointermove', onCanvasPointerMove)
+      this.canvas.removeEventListener('pointerup', onCanvasPointerUp)
+    }
+
+    let onCanvasPointerMove = (evt: PointerEvent) => {
+      evt.preventDefault()
+      this.subContext.clearRect(0,0, this.width, this.height)
+      this.figure.draw(this.subContext, startX, startY,  evt.clientX, evt.clientY)
+    }
+
+    let onCanvasPointerOut = (evt: PointerEvent) => {
+      evt.preventDefault()
+
+      resetListeners()
+    }
+
     let onCanvasPointerUp = (evt: PointerEvent) => {
       evt.preventDefault()   
   
       this.figure.draw(this.context, startX, startY,  evt.clientX, evt.clientY)
 
-      this.canvas.removeEventListener('pointerup', onCanvasPointerUp)
+      resetListeners()
     }
 
     this.canvas.addEventListener('pointerup', onCanvasPointerUp)
-  }
-
-  
-
-  redraw() {
-    this.context.beginPath()
-    this.context.arc(300, 300, 10, 0, 360)
-    this.context.stroke()
+    this.canvas.addEventListener('pointerout', onCanvasPointerOut)
+    this.canvas.addEventListener('pointermove', onCanvasPointerMove)
   }
 }
 
 
 
 const canvas = new CanvasApp()
-
-canvas.redraw()
