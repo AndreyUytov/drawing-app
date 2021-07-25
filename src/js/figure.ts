@@ -53,7 +53,7 @@ abstract class StandartShape implements Shape {
     let startY = evt.clientY
 
     let resetListeners = () => {
-      subContext.clearRect(0,0, canvas.widthCanvas, canvas.heightCanvas)
+      canvas.clearSubContext()
     
       canvas.$canvas.removeEventListener('pointerout', onCanvasPointerOut)
       canvas.$canvas.removeEventListener('pointermove', onCanvasPointerMove)
@@ -62,7 +62,7 @@ abstract class StandartShape implements Shape {
 
     let onCanvasPointerMove = (evt: PointerEvent) => {
       evt.preventDefault()
-      subContext.clearRect(0,0, canvas.widthCanvas, canvas.heightCanvas)
+      canvas.clearSubContext()
       this.drawShape(subContext, startX, startY,  evt.clientX, evt.clientY)
     }
 
