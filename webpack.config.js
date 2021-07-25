@@ -60,6 +60,10 @@ module.exports = (env) => {
       ...htmlPlugins,
     ],
 
+    resolve: {
+      extensions: ['.ts', '.js']
+    },
+
     module: {
       rules: [
         {

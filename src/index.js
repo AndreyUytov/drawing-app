@@ -1,4 +1,4 @@
 import './styles/index.scss'
 import './images/svg/svg-sprite.js'
 
-import './js/proba.ts'
+import './js/canvas.ts'
