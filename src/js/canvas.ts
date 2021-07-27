@@ -1,6 +1,7 @@
 import {
   Shape,
   CanvasCircle,
+  CanvasLine,
   Brush
 } from './figure'
 
@@ -14,7 +15,7 @@ export class Canvas {
 
   private main: HTMLElement
 
-  private shape: Shape = new CanvasCircle()
+  private shape: Shape = new CanvasLine()
   private width: number
   private height: number
   private strokeColor: string = 'black'
@@ -50,7 +51,13 @@ export class Canvas {
         console.log(items[i].type)
         if(/image/.test(items[i].type)) {
           console.log('work');
-          
+          let imageFon = new Image()
+          imageFon.onload = () => {
+            imageFon.width = this.canvas.width
+            imageFon.height = this.canvas.height
+            this.fonContext.drawImage(imageFon, 0,0)
+          }
+          imageFon.src = URL.createObjectURL(items[i])
         }
       }
     })
