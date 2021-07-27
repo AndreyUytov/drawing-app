@@ -134,7 +134,8 @@ module.exports = (env) => {
           ],
         },
         {
-          test: /\.(png|jpe?g|gif|woff|woff2|ttf|webp)$/,
+          test: /\.(png|jpe?g|gif|woff|woff2|ttf|webp|svg)$/,
+          exclude: path.resolve(__dirname, 'src/images/svg'),
           use: [
             {
               loader: 'file-loader',

@@ -1,13 +1,85 @@
 <main class="page-main">
 
-  <!-- <canvas id="fon">
-    Use Chrome
-  </canvas>
-  <canvas id="sub-canvas">
-  </canvas>
-  <canvas id="canvas">
-  </canvas>
-  <canvas id="interface">
-  </canvas> -->
+  <h1 class="page-main__title">
+    drawing app
+  </h1>
+
+  <ul class="page-main__tools list">
+    <li class="tools__item">
+      <button class="button tools-btn">
+        save as image
+      </button>
+    </li>
+
+    <li class="tools__item">
+      <button class="button tools-btn">
+        save to buffer
+      </button>
+    </li>
+
+    <li class="tools__item">
+      <label class="button tools-btn">
+        Ctrl+V img
+        <input type="file" style="display: none;" />
+      </label>
+    </li>
+
+    <li class="tools__item">
+      <label class="button tools-btn">
+        line width 
+        <input type="number" class="tools__input" value="2" min="1" max="6" />
+      </label>
+    </li>
+
+    <li class="tools__item">
+      <label class="button tools-btn">
+        color
+        <input type="color" class="tools__input" />
+      </label>
+    </li>
+  </ul>
+
+  <ul class="page-main__draw-tools list">
+
+    <li class="draw-tools__item">
+      <button class="button draw-tools__button">
+        brush
+      </button>
+    </li>
+
+    <li class="draw-tools__item">
+      <button class="button draw-tools__button">
+        line
+      </button>
+    </li>
+
+    <li class="draw-tools__item">
+      <button class="button draw-tools__button draw-tools__button--selected">
+        circle
+      </button>
+    </li>
+
+    <li class="draw-tools__item">
+      <button class="button draw-tools__button">
+        rectangle
+      </button>
+    </li>
+
+    <li class="draw-tools__item">
+      <button class="button draw-tools__button">
+        eraser
+      </button>
+    </li>
+
+    <li class="draw-tools__item">
+      <button class="button draw-tools__button">
+        clear
+      </button>
+    </li>
+  </ul>
+
+  <div class="canvas-container">
+    <!-- canvas here -->
+  </div>
  
 </main>

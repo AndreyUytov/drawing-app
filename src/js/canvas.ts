@@ -13,13 +13,13 @@ export class Canvas {
   private subContext: CanvasRenderingContext2D
   private fonContext: CanvasRenderingContext2D
 
-  private main: HTMLElement
+  private canvasContainer: HTMLElement
 
   private shape: Shape = new CanvasLine()
   private width: number
   private height: number
   private strokeColor: string = 'black'
-  private lineWidth: number = 4
+  private lineWidth: number = 2
 
   constructor() {
     this.canvas = document.createElement('canvas')
@@ -29,11 +29,10 @@ export class Canvas {
     this.subContext = this.subCanvas.getContext("2d")
     this.fonContext = this.fon.getContext("2d")
 
-    this.main = document.querySelector('.page-main')
+    this.canvasContainer = document.querySelector('.canvas-container')
 
 
-    this.width = this.canvas.width = this.subCanvas.width = this.fon.width = innerWidth
-    this.height = this.canvas.height =  this.subCanvas.height = this.fon.height = innerHeight
+    this.setCanvasSize()
     this.context.lineCap = this.subContext.lineCap = 'round'
     this.context.lineJoin = this.subContext.lineJoin = 'round'
     this.context.lineWidth = this.subContext.lineWidth = this.lineWidth
@@ -44,13 +43,10 @@ export class Canvas {
     this.subContext.setLineDash([4, 8])
 
     window.addEventListener('paste', (evt: ClipboardEvent) => {
-      console.log(evt.clipboardData.files)
 
       let items = evt.clipboardData.files
       for(let i = 0; i < items.length; i++) {
-        console.log(items[i].type)
         if(/image/.test(items[i].type)) {
-          console.log('work');
           let imageFon = new Image()
           imageFon.onload = () => {
             imageFon.width = this.canvas.width
@@ -65,7 +61,12 @@ export class Canvas {
     this.canvas.addEventListener('pointerdown', this.onCanvasPointerDown)
 
     this.renderCanvas()
+  }
 
+  private setCanvasSize ()  {
+    this.width = this.canvas.width = this.subCanvas.width = this.fon.width = this.canvasContainer.getBoundingClientRect().width
+
+    this.height = this.canvas.height =  this.subCanvas.height = this.fon.height = this.canvasContainer.getBoundingClientRect().height
   }
 
   get widthCanvas () {
@@ -97,7 +98,7 @@ export class Canvas {
   }
 
   private renderCanvas() {
-    this.main.append(this.fon, this.subCanvas, this.canvas)
+    this.canvasContainer.append(this.fon, this.subCanvas, this.canvas)
   }
 
   private onCanvasPointerDown = (evt: PointerEvent) => {

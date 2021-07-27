@@ -1,0 +1,165 @@
+.canvas-container {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  & canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+    touch-action: none;
+  }
+}
+
+.page-main {
+  position: relative;
+
+  padding: 8px 0;
+  width: 100%;
+  height: 100vh;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: [title]auto [tools]52px [canvas]1fr [draw-tools] 52px;
+  grid-gap: 12px;
+}
+
+.page-main__title {
+  grid-row: title;
+  padding: 0 16px;
+  margin: 0;
+
+  font-size: 24px;
+  line-height: 29px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.page-main__tools {
+  grid-row: tools;
+
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tools__item {
+  width: 19%;
+  height: 100%;
+
+  &:not(:last-of-type) {
+    margin-right: 4px;
+  }
+}
+
+.tools-btn {
+  width: 100%;
+  height: 100%;
+
+  flex-wrap: wrap;
+
+  & .tools__input {
+    width: 100%;
+    height: 25px;
+  }
+}
+
+.page-main__draw-tools {
+  grid-row: draw-tools;
+
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.draw-tools__item {
+  width: 16%;
+  height: 100%;
+
+  &:not(:last-of-type) {
+    margin-right: 4px;
+  }
+}
+
+.draw-tools__button {
+  width: 100%;
+  height: 100%;
+
+  &--selected {
+    background-color: var(--btn-selected);
+    color: var(--btn-color);
+  }
+}
+
+.canvas-container {
+  grid-row: canvas;
+}
+
+@media (min-width: 768px) {
+  .page-main {
+    grid-template-columns: 20px [canvas] 1fr 20px;
+    grid-template-rows: [title]auto [tools]52px [canvas]1fr;
+  }
+
+  .page-main__title {
+    grid-column: canvas;
+    grid-row: title;
+  }
+
+  .page-main__tools {
+    padding: 0;
+    grid-row: tools;
+    grid-column: canvas;
+  }
+
+  .page-main__draw-tools {
+    position: absolute;
+    width: 80px;
+    height: auto;
+    left: -56px;
+
+    grid-row: canvas;
+
+    flex-direction: column;
+    justify-content: flex-start;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: calc(50% - 16px);
+      right: 0px;
+      width: 20px;
+      height: 20px;
+
+      background-image: url('./../images/arrow.svg');
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+    }
+  }
+
+  .draw-tools__item {
+    width: 100%;
+    height: 46px;
+  
+    &:not(:last-of-type) {
+      margin-right: 0px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .canvas-container {
+    grid-row: canvas;
+    grid-column: canvas;
+  }
+}
