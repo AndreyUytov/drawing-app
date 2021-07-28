@@ -6,10 +6,7 @@ export interface Shape {
 
 export class Brush implements Shape {
   draw(canvas: Canvas, evt: PointerEvent ) {
-    evt.preventDefault()    
-
-    let context = canvas.$canvas.getContext("2d")
-    context.moveTo(evt.clientX, evt.clientY)
+    evt.preventDefault()
 
     let resetListeners = () => {
       canvas.$canvas.removeEventListener('pointerout', onCanvasPointerOut)
@@ -17,11 +14,21 @@ export class Brush implements Shape {
       canvas.$canvas.removeEventListener('pointerup', onCanvasPointerUp)
     }
 
+    let shiftX = canvas.$canvas.getBoundingClientRect().left
+    let shiftY = canvas.$canvas.getBoundingClientRect().top
+
+    let context = canvas.$canvas.getContext("2d")
+    context.moveTo(evt.clientX - shiftX, evt.clientY - shiftY)
+    context.beginPath()
+
+    
+
     let onCanvasPointerMove = (evt: PointerEvent) => {
       evt.preventDefault() 
         
-      context.lineTo(evt.clientX, evt.clientY)
+      context.lineTo(evt.clientX - shiftX, evt.clientY - shiftY)
       context.stroke() 
+
     }
 
     let onCanvasPointerUp = (evt: PointerEvent) => {
@@ -49,8 +56,11 @@ abstract class StandartShape implements Shape {
     let subContext = canvas.$subCanvas.getContext("2d")
     let context = canvas.$canvas.getContext("2d")
 
-    let startX = evt.clientX
-    let startY = evt.clientY
+    let shiftX = canvas.$canvas.getBoundingClientRect().left
+    let shiftY = canvas.$canvas.getBoundingClientRect().top
+
+    let startX = evt.clientX - shiftX
+    let startY = evt.clientY - shiftY
 
     let resetListeners = () => {
       canvas.clearSubContext()
@@ -63,7 +73,7 @@ abstract class StandartShape implements Shape {
     let onCanvasPointerMove = (evt: PointerEvent) => {
       evt.preventDefault()
       canvas.clearSubContext()
-      this.drawShape(subContext, startX, startY,  evt.clientX, evt.clientY)
+      this.drawShape(subContext, startX, startY,  evt.clientX - shiftX, evt.clientY - shiftY)
     }
 
     let onCanvasPointerOut = (evt: PointerEvent) => {
@@ -75,7 +85,7 @@ abstract class StandartShape implements Shape {
     let onCanvasPointerUp = (evt: PointerEvent) => {
       evt.preventDefault()   
   
-      this.drawShape(context, startX, startY,  evt.clientX, evt.clientY)
+      this.drawShape(context, startX, startY,  evt.clientX - shiftX, evt.clientY - shiftY)
 
       resetListeners()
     }

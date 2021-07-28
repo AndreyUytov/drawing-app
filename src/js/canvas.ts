@@ -5,6 +5,12 @@ import {
   Brush
 } from './figure'
 
+import {
+  UserInterface
+} from './user-interface'
+
+import { Command, SetColorCommand } from './command'
+
 export class Canvas {
   private canvas: HTMLCanvasElement
   private fon: HTMLCanvasElement
@@ -18,10 +24,8 @@ export class Canvas {
   private shape: Shape = new CanvasLine()
   private width: number
   private height: number
-  private strokeColor: string = 'black'
-  private lineWidth: number = 2
 
-  constructor() {
+  constructor(canvasContainer: HTMLElement) {
     this.canvas = document.createElement('canvas')
     this.fon = document.createElement('canvas')
     this.subCanvas = document.createElement('canvas')
@@ -29,34 +33,18 @@ export class Canvas {
     this.subContext = this.subCanvas.getContext("2d")
     this.fonContext = this.fon.getContext("2d")
 
-    this.canvasContainer = document.querySelector('.canvas-container')
+    this.canvasContainer = canvasContainer
 
 
     this.setCanvasSize()
+    this.context.globalCompositeOperation = 'source-over'
+    this.fonContext.globalCompositeOperation = 'source-over'
     this.context.lineCap = this.subContext.lineCap = 'round'
     this.context.lineJoin = this.subContext.lineJoin = 'round'
-    this.context.lineWidth = this.subContext.lineWidth = this.lineWidth
-    
-    this.context.strokeStyle = this.strokeColor
-    
+    this.context.lineWidth = this.subContext.lineWidth = 2
+    this.context.strokeStyle = "black"
     this.subContext.strokeStyle = `rgba(0,0,0,0.4)`
     this.subContext.setLineDash([4, 8])
-
-    window.addEventListener('paste', (evt: ClipboardEvent) => {
-
-      let items = evt.clipboardData.files
-      for(let i = 0; i < items.length; i++) {
-        if(/image/.test(items[i].type)) {
-          let imageFon = new Image()
-          imageFon.onload = () => {
-            imageFon.width = this.canvas.width
-            imageFon.height = this.canvas.height
-            this.fonContext.drawImage(imageFon, 0,0)
-          }
-          imageFon.src = URL.createObjectURL(items[i])
-        }
-      }
-    })
 
     this.canvas.addEventListener('pointerdown', this.onCanvasPointerDown)
 
@@ -69,12 +57,46 @@ export class Canvas {
     this.height = this.canvas.height =  this.subCanvas.height = this.fon.height = this.canvasContainer.getBoundingClientRect().height
   }
 
-  get widthCanvas () {
-    return this.width
+  set backgroundImage(value: File) {
+    if(/image/.test(value.type)) {
+      let imageFon = new Image()
+      imageFon.onload = () => {
+        this.fonContext.drawImage(imageFon, 0,0)
+      }
+      imageFon.src = URL.createObjectURL(value)
+
+      URL.revokeObjectURL(imageFon.src)
+    }
   }
 
-  get heightCanvas () {
-    return this.height
+   async copyCanvasToOneFon() {
+    let blob = await new Promise(res => this.canvas.toBlob(res, 'image/png'))
+
+    return new Promise(res => {
+      let img = new Image()
+      img.onload = () => {
+        this.fonContext.drawImage(img, 0,0)
+        res('done!')
+      }
+      img.src = URL.createObjectURL(blob)
+      URL.revokeObjectURL(img.src)
+      })
+  }
+
+  saveCanvasAsFile() {
+    this.copyCanvasToOneFon().then(
+      () => {
+        this.fon.toBlob(function(blob) {
+          let link = document.createElement('a')
+          link.download = 'mycanvas.png'
+        
+          link.href = URL.createObjectURL(blob);
+          link.click()
+          URL.revokeObjectURL(link.href)
+        }, 'image/png')
+      }
+    )
+    
   }
 
   get $canvas () {
@@ -87,6 +109,14 @@ export class Canvas {
 
   set shapeInstrument (shape: Shape) {
     this.shape = shape
+  }
+
+  set color(color:string) {
+    this.context.strokeStyle = color
+  }
+
+  set lineWidth (value: number) {
+    this.context.lineWidth = this.subContext.lineWidth = value
   }
 
   clearContext () {
@@ -107,5 +137,3 @@ export class Canvas {
   }
 
 }
-
-const canv = new Canvas()
