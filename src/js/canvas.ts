@@ -1,7 +1,5 @@
 import {
   Shape,
-  CanvasCircle,
-  CanvasLine,
   Brush
 } from './figure'
 
@@ -21,7 +19,7 @@ export class Canvas {
 
   private canvasContainer: HTMLElement
 
-  private shape: Shape = new CanvasLine()
+  private shape: Shape = new Brush()
   private width: number
   private height: number
 

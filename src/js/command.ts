@@ -1,4 +1,5 @@
 import {Canvas} from './canvas'
+import { Shape } from './figure'
 
 export abstract class Command {
   protected canvas: Canvas
@@ -61,5 +62,17 @@ export class SaveToBufferCommand extends Command {
   }
   execute() {
     this.canvas.saveCanvasToBuffer(this.resolve, this.reject)
+  }
+}
+
+export class SetDrawTools extends Command {
+  private tool: Shape
+  constructor(canvas: Canvas, tool: Shape) {
+    super(canvas)
+    this.tool = tool
+  }
+
+  execute() {
+    this.canvas.shapeInstrument = this.tool
   }
 }

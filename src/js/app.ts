@@ -2,15 +2,35 @@ import {
   Canvas
 } from './canvas'
 
+import {
+  Shape,
+  CanvasCircle,
+  CanvasLine,
+  Brush,
+  CanvasRect
+} from './figure'
+
 import { Command,
   SetColorCommand,
   SetlineWidthCommand,
   InsertFonCommand, 
   SaveAsFileCommand,
-  SaveToBufferCommand
+  SaveToBufferCommand,
+  SetDrawTools
 } from './command'
 
 import { UserInterface } from './user-interface'
+
+interface Imap {
+  [key:string]: Shape 
+}
+
+const mapToolToShape: Imap = {
+  brush: new Brush(),
+  line: new CanvasLine(),
+  circle: new CanvasCircle(),
+  rectangle: new CanvasRect(),
+}
 
 export class App {
   private canvas: Canvas
@@ -46,6 +66,17 @@ export class App {
     this.executeCommand(new SaveAsFileCommand(this.canvas))
   }
 
+  private setTool (tool:string) {
+    let shape = mapToolToShape[tool]
+    if(!shape) {
+      alert(`That shape ${tool} not exist!`)
+      return false
+    }
+    this.executeCommand(new SetDrawTools(this.canvas, shape))
+
+    return true
+  }
+
   private setListenersUI () {
 
     this.UI.setColorBtn.setCommand((v:string) => this.setColor(v))
@@ -65,5 +96,6 @@ export class App {
 
     this.UI.saveAsFileBtn.setCommand(() => this.saveAsFile())
     this.UI.saveToBufferBtn.setCommand(() => this.copyToClipBoard(()=>alert('copy to clipboard!'), () => alert('Not support! Use Chrome browser for copy to buffer!')))
+    this.UI.setDrawToolBtn.setCommand((tool:string) => this.setTool(tool))
   }
 }
