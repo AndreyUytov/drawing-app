@@ -6,7 +6,8 @@ import { Command,
   SetColorCommand,
   SetlineWidthCommand,
   InsertFonCommand, 
-  SaveAsFileCommand
+  SaveAsFileCommand,
+  SaveToBufferCommand
 } from './command'
 
 import { UserInterface } from './user-interface'
@@ -37,8 +38,8 @@ export class App {
     this.executeCommand(new InsertFonCommand(this.canvas, value))
   }
 
-  private copyToClipBoard () {
-    
+  private copyToClipBoard (resolve: (reason:void) => void, reject: (reason:void) => void) {
+    this.executeCommand(new SaveToBufferCommand(this.canvas, resolve, reject))
   }
 
   private saveAsFile () {
@@ -63,5 +64,6 @@ export class App {
     })
 
     this.UI.saveAsFileBtn.setCommand(() => this.saveAsFile())
+    this.UI.saveToBufferBtn.setCommand(() => this.copyToClipBoard(()=>alert('copy to clipboard!'), () => alert('Not support! Use Chrome browser for copy to buffer!')))
   }
 }

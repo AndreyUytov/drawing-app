@@ -61,42 +61,44 @@ export class Canvas {
     if(/image/.test(value.type)) {
       let imageFon = new Image()
       imageFon.onload = () => {
-        this.fonContext.drawImage(imageFon, 0,0)
+        if(imageFon.width > this.width || imageFon.height > this.height) {
+          this.fonContext.drawImage(imageFon, 0,0, this.width,this.height)
+        } else {
+          this.fonContext.drawImage(imageFon, 0,0)
+        }       
       }
       imageFon.src = URL.createObjectURL(value)
 
-      URL.revokeObjectURL(imageFon.src)
+      // URL.revokeObjectURL(imageFon.src)
     }
   }
 
-   async copyCanvasToOneFon() {
-    let blob = await new Promise(res => this.canvas.toBlob(res, 'image/png'))
-
-    return new Promise(res => {
-      let img = new Image()
-      img.onload = () => {
-        this.fonContext.drawImage(img, 0,0)
-        res('done!')
-      }
-      img.src = URL.createObjectURL(blob)
-      URL.revokeObjectURL(img.src)
-      })
+   copyCanvasToOneFon() {
+    this.fonContext.drawImage(this.$canvas, 0,0)
   }
 
   saveCanvasAsFile() {
-    this.copyCanvasToOneFon().then(
-      () => {
-        this.fon.toBlob(function(blob) {
-          let link = document.createElement('a')
-          link.download = 'mycanvas.png'
-        
-          link.href = URL.createObjectURL(blob);
-          link.click()
-          URL.revokeObjectURL(link.href)
-        }, 'image/png')
-      }
-    )
+    this.copyCanvasToOneFon()
+    this.fon.toBlob((blob) => {
+      let link = document.createElement('a')
+      link.download = 'mycanvas.png'
     
+      link.href = URL.createObjectURL(blob);
+      link.click()
+      URL.revokeObjectURL(link.href)
+    }, 'image/png')
+  }
+
+  saveCanvasToBuffer(resolve: (reason:void) => void, reject: (reason:void) => void) {
+    this.copyCanvasToOneFon()
+    this.fon.toBlob((blob) => {
+    if(navigator.clipboard && typeof ClipboardItem === 'function') {
+      navigator.clipboard.write([new ClipboardItem({'image/png': blob})]).then(resolve)
+    } else {
+      console.log('navigator ClipboardItem not exist');
+      reject()
+      }
+    }, 'image/png')
   }
 
   get $canvas () {

@@ -50,3 +50,16 @@ export class SaveAsFileCommand extends Command {
     this.canvas.saveCanvasAsFile()
   }
 }
+
+export class SaveToBufferCommand extends Command {
+  private resolve: (reason:void) => void
+  private reject: (reason:void) => void
+  constructor(canvas: Canvas, resolve: (reason:void) => void, reject: (reason:void) => void) {
+    super(canvas)
+    this.resolve = resolve
+    this.reject = reject
+  }
+  execute() {
+    this.canvas.saveCanvasToBuffer(this.resolve, this.reject)
+  }
+}
