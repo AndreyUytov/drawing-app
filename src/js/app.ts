@@ -7,8 +7,7 @@ import {
   CanvasCircle,
   CanvasLine,
   Brush,
-  CanvasRect,
-  Eraser
+  CanvasRect
 } from './figure'
 
 import { Command,
@@ -18,7 +17,8 @@ import { Command,
   SaveAsFileCommand,
   SaveToBufferCommand,
   SetDrawToolsCommand,
-  ClearCanvasCommand
+  ClearCanvasCommand,
+  ToogleEraserCommand
 } from './command'
 
 import { UserInterface } from './user-interface'
@@ -31,8 +31,7 @@ const mapToolToShape: Imap = {
   brush: new Brush(),
   line: new CanvasLine(),
   circle: new CanvasCircle(),
-  rectangle: new CanvasRect(),
-  eraser: new Eraser()
+  rectangle: new CanvasRect()
 }
 
 export class App {
@@ -84,6 +83,10 @@ export class App {
     this.executeCommand(new ClearCanvasCommand(this.canvas))
   }
 
+  private toogleEraser(value: boolean) {
+    this.executeCommand(new ToogleEraserCommand(this.canvas, value))
+  }
+
   private setListenersUI () {
 
     this.UI.setColorBtn.setCommand((v:string) => this.setColor(v))
@@ -105,5 +108,6 @@ export class App {
     this.UI.saveToBufferBtn.setCommand(() => this.copyToClipBoard(()=>alert('copy to clipboard!'), () => alert('Not support! Use Chrome browser for copy to buffer!')))
     this.UI.setDrawToolBtn.setCommand((tool:string) => this.setTool(tool))
     this.UI.clearCanvasBtn.setCommand(() => this.clearCanvas())
+    this.UI.eraserToogleBtn.setCommand((value: boolean) => this.toogleEraser(value))
   }
 }

@@ -13,6 +13,7 @@ export class  UserInterface {
   setColorBtn: StandartButton
   
   setDrawToolBtn: StandartButton
+  eraserToogleBtn: StandartButton
   clearCanvasBtn: StandartButton
 
   constructor() {
@@ -22,7 +23,8 @@ export class  UserInterface {
     this.setLineWidthBtn = new SetLineWidthBtn(document.querySelector('.set-line-width-btn')) 
     this.setColorBtn = new SetColorBtn(document.querySelector('.set-color-btn')) 
     this.setDrawToolBtn = new setDrawToolBtn(document.querySelector('.page-main__draw-tools'))
-    this.clearCanvasBtn = new ClearCanvasBtn(document.querySelector('[data-clear=clear]'))
+    this.clearCanvasBtn = new ClearCanvasBtn(document.querySelector('[data-clear="clear"]'))
+    this.eraserToogleBtn = new ToggleEraserBtn(document.querySelector('.eraser-label'))
   }
 }
 
@@ -37,6 +39,21 @@ abstract class Btn implements StandartButton {
   }
 
   abstract setCommand(cb: any):void
+}
+
+class ToggleEraserBtn extends Btn {
+  setCommand(cb:any) {
+    this.btn.addEventListener('click', () => {
+      let value = this.btn.querySelector('input').checked
+      if(value) {
+        this.btn.classList.add('eraser-label--on')
+        cb(value)
+      } else {
+        this.btn.classList.remove('eraser-label--on')
+        cb(value)
+      }
+    })
+  }
 }
 
 class ClearCanvasBtn extends Btn {

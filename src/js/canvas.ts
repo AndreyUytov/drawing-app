@@ -75,6 +75,14 @@ export class Canvas {
     this.fonContext.drawImage(this.$canvas, 0,0)
   }
 
+  set toogleEraser(toogle:boolean) {
+    if(toogle) {
+      this.context.globalCompositeOperation = 'destination-out'
+    } else {
+      this.context.globalCompositeOperation = 'source-over'
+    }
+  }
+
   saveCanvasAsFile() {
     this.copyCanvasToOneFon()
     this.fon.toBlob((blob) => {

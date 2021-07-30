@@ -82,3 +82,15 @@ export class ClearCanvasCommand extends Command {
     this.canvas.clearCanvas()
   }
 }
+
+export class ToogleEraserCommand extends Command {
+  private toggle: boolean
+
+  constructor(canvas: Canvas, toggle: boolean) {
+    super(canvas)
+    this.toggle = toggle
+  }
+  execute() {
+    this.canvas.toogleEraser = this.toggle
+  }
+}

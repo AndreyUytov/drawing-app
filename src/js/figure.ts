@@ -9,7 +9,6 @@ abstract class AbstractBrush implements Shape {
     evt.preventDefault()
 
     let resetListeners = () => {
-      context.restore()
       canvas.$canvas.removeEventListener('pointerout', onCanvasPointerOut)
       canvas.$canvas.removeEventListener('pointermove', onCanvasPointerMove)
       canvas.$canvas.removeEventListener('pointerup', onCanvasPointerUp)
@@ -19,7 +18,6 @@ abstract class AbstractBrush implements Shape {
     let shiftY = canvas.$canvas.getBoundingClientRect().top
 
     let context = canvas.$canvas.getContext("2d")
-    context.save()
     context.moveTo(evt.clientX - shiftX, evt.clientY - shiftY)
     context.beginPath()
 
@@ -58,15 +56,6 @@ export class Brush extends AbstractBrush {
     ctx.stroke() 
   }
 }
-
-export class Eraser extends AbstractBrush {
-  drawShape(ctx: CanvasRenderingContext2D, x: number, y: number) {
-    ctx.strokeStyle = "#fff"
-    ctx.lineTo(x, y)
-    ctx.stroke() 
-  }
-}
-
 abstract class StandartShape implements Shape {
   draw(canvas: Canvas, evt: PointerEvent) {
     evt.preventDefault()
