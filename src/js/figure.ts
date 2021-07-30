@@ -17,7 +17,7 @@ abstract class AbstractBrush implements Shape {
     let shiftX = canvas.$canvas.getBoundingClientRect().left
     let shiftY = canvas.$canvas.getBoundingClientRect().top
 
-    let context = canvas.$canvas.getContext("2d")
+    let context = canvas.drawContext
     context.moveTo(evt.clientX - shiftX, evt.clientY - shiftY)
     context.beginPath()
 
@@ -60,8 +60,8 @@ abstract class StandartShape implements Shape {
   draw(canvas: Canvas, evt: PointerEvent) {
     evt.preventDefault()
 
-    let subContext = canvas.$subCanvas.getContext("2d")
-    let context = canvas.$canvas.getContext("2d")
+    let previewContext = canvas.previewContext
+    let context = canvas.drawContext
 
     let shiftX = canvas.$canvas.getBoundingClientRect().left
     let shiftY = canvas.$canvas.getBoundingClientRect().top
@@ -70,7 +70,7 @@ abstract class StandartShape implements Shape {
     let startY = evt.clientY - shiftY
 
     let resetListeners = () => {
-      canvas.clearSubContext()
+      canvas.clearContext()
     
       canvas.$canvas.removeEventListener('pointerout', onCanvasPointerOut)
       canvas.$canvas.removeEventListener('pointermove', onCanvasPointerMove)
@@ -79,8 +79,8 @@ abstract class StandartShape implements Shape {
 
     let onCanvasPointerMove = (evt: PointerEvent) => {
       evt.preventDefault()
-      canvas.clearSubContext()
-      this.drawShape(subContext, startX, startY,  evt.clientX - shiftX, evt.clientY - shiftY)
+      canvas.clearContext()
+      this.drawShape(previewContext, startX, startY,  evt.clientX - shiftX, evt.clientY - shiftY)
     }
 
     let onCanvasPointerOut = (evt: PointerEvent) => {
