@@ -1,3 +1,10 @@
+import {
+  animate,
+  makeToZero,
+  penta,
+  setupEndValue
+} from './animate'
+
 export class  UserInterface {
   saveAsFileBtn: StandartButton
   saveToBufferBtn: StandartButton
@@ -6,6 +13,7 @@ export class  UserInterface {
   setColorBtn: StandartButton
   
   setDrawToolBtn: StandartButton
+  clearCanvasBtn: StandartButton
 
   constructor() {
     this.saveAsFileBtn = new SaveAsFileBtn(document.querySelector('.save-as-file-btn')) 
@@ -14,8 +22,7 @@ export class  UserInterface {
     this.setLineWidthBtn = new SetLineWidthBtn(document.querySelector('.set-line-width-btn')) 
     this.setColorBtn = new SetColorBtn(document.querySelector('.set-color-btn')) 
     this.setDrawToolBtn = new setDrawToolBtn(document.querySelector('.page-main__draw-tools'))
-
-
+    this.clearCanvasBtn = new ClearCanvasBtn(document.querySelector('[data-clear=clear]'))
   }
 }
 
@@ -32,11 +39,51 @@ abstract class Btn implements StandartButton {
   abstract setCommand(cb: any):void
 }
 
+class ClearCanvasBtn extends Btn {
+  setCommand(cb: any) {
+    this.btn.addEventListener('click', () => {
+      cb()
+    })
+  }
+}
+
 class setDrawToolBtn extends Btn {
   activeTool:HTMLElement
   constructor(btn: HTMLElement) {
     super(btn)
     this.activeTool = document.querySelector('.draw-tools__button--selected')
+    this.toggleDrawToolsPanel()
+  }
+
+  toggleDrawToolsPanel () {
+    if(window.innerWidth >= 768) {
+      this.btn.addEventListener('pointerenter', (evt) => {
+        animate(
+          {
+            duration: 400,
+            timing: makeToZero(penta),
+            draw: (progress: number) => {
+              
+              this.btn.style.left = `${setupEndValue(-56, 0, progress)}px`
+            }
+          }
+        )
+        
+      })
+
+      this.btn.addEventListener('pointerleave', (evt) => {
+        animate(
+          {
+            duration: 400,
+            timing: makeToZero(penta),
+            draw: (progress: number) => {
+              
+              this.btn.style.left = `${setupEndValue(0, -56, progress)}px`
+            }
+          }
+        )
+      })
+    }
   }
   
   setCommand(cb:any) {

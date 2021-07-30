@@ -65,7 +65,7 @@ export class SaveToBufferCommand extends Command {
   }
 }
 
-export class SetDrawTools extends Command {
+export class SetDrawToolsCommand extends Command {
   private tool: Shape
   constructor(canvas: Canvas, tool: Shape) {
     super(canvas)
@@ -74,5 +74,11 @@ export class SetDrawTools extends Command {
 
   execute() {
     this.canvas.shapeInstrument = this.tool
+  }
+}
+
+export class ClearCanvasCommand extends Command {
+  execute() {
+    this.canvas.clearCanvas()
   }
 }

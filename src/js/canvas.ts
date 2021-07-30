@@ -119,8 +119,9 @@ export class Canvas {
     this.context.lineWidth = this.subContext.lineWidth = value
   }
 
-  clearContext () {
+  clearCanvas () {
     this.context.clearRect(0,0,this.width, this.height)
+    this.fonContext.clearRect(0,0, this.width, this.height)
   }
 
   clearSubContext () {

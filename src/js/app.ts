@@ -7,7 +7,8 @@ import {
   CanvasCircle,
   CanvasLine,
   Brush,
-  CanvasRect
+  CanvasRect,
+  Eraser
 } from './figure'
 
 import { Command,
@@ -16,7 +17,8 @@ import { Command,
   InsertFonCommand, 
   SaveAsFileCommand,
   SaveToBufferCommand,
-  SetDrawTools
+  SetDrawToolsCommand,
+  ClearCanvasCommand
 } from './command'
 
 import { UserInterface } from './user-interface'
@@ -30,6 +32,7 @@ const mapToolToShape: Imap = {
   line: new CanvasLine(),
   circle: new CanvasCircle(),
   rectangle: new CanvasRect(),
+  eraser: new Eraser()
 }
 
 export class App {
@@ -72,9 +75,13 @@ export class App {
       alert(`That shape ${tool} not exist!`)
       return false
     }
-    this.executeCommand(new SetDrawTools(this.canvas, shape))
+    this.executeCommand(new SetDrawToolsCommand(this.canvas, shape))
 
     return true
+  }
+
+  private clearCanvas() {
+    this.executeCommand(new ClearCanvasCommand(this.canvas))
   }
 
   private setListenersUI () {
@@ -97,5 +104,6 @@ export class App {
     this.UI.saveAsFileBtn.setCommand(() => this.saveAsFile())
     this.UI.saveToBufferBtn.setCommand(() => this.copyToClipBoard(()=>alert('copy to clipboard!'), () => alert('Not support! Use Chrome browser for copy to buffer!')))
     this.UI.setDrawToolBtn.setCommand((tool:string) => this.setTool(tool))
+    this.UI.clearCanvasBtn.setCommand(() => this.clearCanvas())
   }
 }

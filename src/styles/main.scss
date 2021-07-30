@@ -125,7 +125,7 @@
 
   .page-main__draw-tools {
     position: absolute;
-    width: 80px;
+    width: 85px;
     height: auto;
     left: -56px;
 
@@ -133,6 +133,8 @@
 
     flex-direction: column;
     justify-content: flex-start;
+
+    z-index: 1000;
 
     &::after {
       content: '';
@@ -161,5 +163,7 @@
   .canvas-container {
     grid-row: canvas;
     grid-column: canvas;
+
+    border: 1px solid var(--btn-color);
   }
 }

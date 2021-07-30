@@ -59,7 +59,7 @@ input[type='radio'].visually-hidden {
 
 .button {
   margin: 0;
-  padding: 6px;
+  padding: 2px;
 
   display: flex;
   align-items: center;
@@ -78,5 +78,10 @@ input[type='radio'].visually-hidden {
 
   &:active {
     background-color: var(--btn-active);
+  }
+
+  @media (min-width: 768px) {
+    font-size: 14px;
+    line-height: 20px;
   }
 }

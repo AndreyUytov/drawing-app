@@ -4,11 +4,12 @@ export interface Shape {
   draw(canvas: Canvas, evt: PointerEvent ): void
 }
 
-export class Brush implements Shape {
+abstract class AbstractBrush implements Shape {
   draw(canvas: Canvas, evt: PointerEvent ) {
     evt.preventDefault()
 
     let resetListeners = () => {
+      context.restore()
       canvas.$canvas.removeEventListener('pointerout', onCanvasPointerOut)
       canvas.$canvas.removeEventListener('pointermove', onCanvasPointerMove)
       canvas.$canvas.removeEventListener('pointerup', onCanvasPointerUp)
@@ -18,6 +19,7 @@ export class Brush implements Shape {
     let shiftY = canvas.$canvas.getBoundingClientRect().top
 
     let context = canvas.$canvas.getContext("2d")
+    context.save()
     context.moveTo(evt.clientX - shiftX, evt.clientY - shiftY)
     context.beginPath()
 
@@ -26,8 +28,7 @@ export class Brush implements Shape {
     let onCanvasPointerMove = (evt: PointerEvent) => {
       evt.preventDefault() 
         
-      context.lineTo(evt.clientX - shiftX, evt.clientY - shiftY)
-      context.stroke() 
+      this.drawShape(context, evt.clientX - shiftX, evt.clientY - shiftY ) 
 
     }
 
@@ -46,6 +47,23 @@ export class Brush implements Shape {
     canvas.$canvas.addEventListener('pointerout', onCanvasPointerOut)
     canvas.$canvas.addEventListener('pointermove', onCanvasPointerMove)
     canvas.$canvas.addEventListener('pointerup', onCanvasPointerUp)
+  }
+
+  abstract drawShape(ctx: CanvasRenderingContext2D, x:number, y: number ): void
+}
+
+export class Brush extends AbstractBrush {
+  drawShape(ctx: CanvasRenderingContext2D, x: number, y: number) {
+    ctx.lineTo(x, y)
+    ctx.stroke() 
+  }
+}
+
+export class Eraser extends AbstractBrush {
+  drawShape(ctx: CanvasRenderingContext2D, x: number, y: number) {
+    ctx.strokeStyle = "#fff"
+    ctx.lineTo(x, y)
+    ctx.stroke() 
   }
 }
 
