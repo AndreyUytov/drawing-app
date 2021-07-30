@@ -47,6 +47,8 @@ export class Canvas {
     this.canvas.addEventListener('pointerdown', this.onCanvasPointerDown)
 
     this.renderCanvas()
+
+    this.setPointerView()
   }
 
   private setCanvasSize ()  {
@@ -73,6 +75,25 @@ export class Canvas {
 
    copyCanvasToOneFon() {
     this.fonContext.drawImage(this.$canvas, 0,0)
+  }
+
+  setPointerView() {
+    let pointer = document.getElementById('pointer') as HTMLImageElement
+    let shiftX = this.$canvas.getBoundingClientRect().left + 7
+    let shiftY = this.$canvas.getBoundingClientRect().top + 7
+
+    let showPointer = (x:number, y:number) => {
+      this.clearSubContext()
+      this.subContext.drawImage(pointer, x, y, 14, 14)
+    }
+
+    
+    this.canvas.addEventListener('pointerover', (evt) => {
+      showPointer(evt.clientX - shiftX, evt.clientY - shiftY)
+    })
+    this.canvas.addEventListener('pointermove', (evt) => {
+      showPointer(evt.clientX - shiftX, evt.clientY - shiftY)
+    })
   }
 
   set toogleEraser(toogle:boolean) {
