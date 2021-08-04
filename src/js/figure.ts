@@ -12,6 +12,10 @@ abstract class AbstractBrush implements Shape {
     let context = canvas.previewContext
 
     context.save()
+    context.shadowOffsetX = 2
+    context.shadowOffsetY = 2
+    context.shadowBlur = 2
+    context.shadowColor = 'rgba(0,0,0,0.5)'
     context.fillStyle = canvas.color
     context.beginPath()
     context.arc(dislocationX, dislocationY, canvas.lineWidth / 2, 0, 360)
@@ -114,6 +118,10 @@ abstract class StandartShape implements Shape {
     let context = canvas.previewContext
 
     context.save()
+    context.shadowOffsetX = 2
+    context.shadowOffsetY = 2
+    context.shadowBlur = 2
+    context.shadowColor = 'rgba(0,0,0,0.5)'
     context.strokeStyle = canvas.color
     context.lineWidth = 2
     context.setLineDash([])
