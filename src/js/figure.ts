@@ -46,11 +46,9 @@ abstract class AbstractBrush implements Shape {
     let onCanvasDown = (evt: PointerEvent) => {
       canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
       canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
-      canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
     }
 
     let onCanvasUp = () => {
-      canvas.$canvas.addEventListener('pointermove', onCanvasMove)
       canvas.$canvas.addEventListener('pointerdown', onCanvasDown)
       canvas.$canvas.addEventListener('pointerout', onCanvasOut)
     }
