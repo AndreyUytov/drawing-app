@@ -34,7 +34,31 @@ abstract class AbstractBrush implements Shape {
       this.pointer(canvas, evt, shiftX, shiftY)
     }
 
+    let onCanvasOut = (evt: PointerEvent) => {
+      console.log('out brush')
+
+      canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
+      canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
+      canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
+      canvas.$canvas.removeEventListener('pointerup', onCanvasUp)
+    }
+
+    let onCanvasDown = (evt: PointerEvent) => {
+      canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
+      canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
+      canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
+    }
+
+    let onCanvasUp = () => {
+      canvas.$canvas.addEventListener('pointermove', onCanvasMove)
+      canvas.$canvas.addEventListener('pointerdown', onCanvasDown)
+      canvas.$canvas.addEventListener('pointerout', onCanvasOut)
+    }
+
     canvas.$canvas.addEventListener('pointermove', onCanvasMove)
+    canvas.$canvas.addEventListener('pointerdown', onCanvasDown)
+    canvas.$canvas.addEventListener('pointerout', onCanvasOut)
+    canvas.$canvas.addEventListener('pointerup', onCanvasUp)
   }
 
   draw(canvas: Canvas, evt: PointerEvent) {
@@ -126,19 +150,31 @@ abstract class StandartShape implements Shape {
       this.pointer(canvas, evt, shiftX, shiftY)
     }
 
+    let onCanvasOut = (evt: PointerEvent) => {
+      console.log('out')
+
+      canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
+      canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
+      canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
+      canvas.$canvas.removeEventListener('pointerup', onCanvasUp)
+    }
+
     let onCanvasDown = (evt: PointerEvent) => {
       canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
       canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
+      canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
     }
 
     let onCanvasUp = (evt: PointerEvent) => {
       canvas.$canvas.addEventListener('pointermove', onCanvasMove)
       canvas.$canvas.addEventListener('pointerdown', onCanvasDown)
+      canvas.$canvas.addEventListener('pointerout', onCanvasOut)
     }
 
     canvas.$canvas.addEventListener('pointermove', onCanvasMove)
     canvas.$canvas.addEventListener('pointerdown', onCanvasDown)
     canvas.$canvas.addEventListener('pointerup', onCanvasUp)
+    canvas.$canvas.addEventListener('pointerout', onCanvasOut)
   }
 
   draw(canvas: Canvas, evt: PointerEvent) {
