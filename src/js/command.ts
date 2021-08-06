@@ -1,5 +1,6 @@
-import {Canvas} from './canvas'
+import { Canvas } from './canvas'
 import { Shape } from './figure'
+import Snapshot from './snapshot'
 
 export abstract class Command {
   protected canvas: Canvas
@@ -12,7 +13,7 @@ export abstract class Command {
 
 export class SetColorCommand extends Command {
   private color: string
-  constructor(canvas:Canvas, color:string) {
+  constructor(canvas: Canvas, color: string) {
     super(canvas)
     this.color = color
   }
@@ -53,9 +54,13 @@ export class SaveAsFileCommand extends Command {
 }
 
 export class SaveToBufferCommand extends Command {
-  private resolve: (reason:void) => void
-  private reject: (reason:void) => void
-  constructor(canvas: Canvas, resolve: (reason:void) => void, reject: (reason:void) => void) {
+  private resolve: (reason: void) => void
+  private reject: (reason: void) => void
+  constructor(
+    canvas: Canvas,
+    resolve: (reason: void) => void,
+    reject: (reason: void) => void
+  ) {
     super(canvas)
     this.resolve = resolve
     this.reject = reject
@@ -92,5 +97,32 @@ export class ToogleEraserCommand extends Command {
   }
   execute() {
     this.canvas.toogleEraser = this.toggle
+  }
+}
+
+export class MakeBackupCommand extends Command {
+  private history: Snapshot[]
+  constructor(canvas: Canvas, history: Snapshot[]) {
+    super(canvas)
+    this.history = history
+  }
+  execute() {
+    this.canvas.createSnapshot().then((value) => {
+      this.history.push(value)
+    })
+  }
+}
+
+export class UndoCommand extends Command {
+  private history: Snapshot[]
+  constructor(canvas: Canvas, history: Snapshot[]) {
+    super(canvas)
+    this.history = history
+  }
+  execute() {
+    let backup = this.history.pop()
+    if (backup) {
+      backup.restore()
+    }
   }
 }

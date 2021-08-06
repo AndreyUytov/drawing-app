@@ -1,31 +1,25 @@
 <main class="page-main">
-  <h1 class="page-main__title">
-    drawing app
-  </h1>
+  <h1 class="page-main__title">drawing app</h1>
 
   <ul class="page-main__tools list">
     <li class="tools__item">
-      <button class="button tools-btn save-as-file-btn">
-        save as image
-      </button>
+      <button class="button tools-btn save-as-file-btn">save as image</button>
     </li>
 
     <li class="tools__item">
-      <button class="button tools-btn save-to-buffer">
-        save to buffer
-      </button>
+      <button class="button tools-btn save-to-buffer">save to buffer</button>
     </li>
 
     <li class="tools__item">
       <label class="button tools-btn insert-btn">
         Ctrl+V img
-        <input type="file" style="display: none;" />
+        <input type="file" style="display: none" />
       </label>
     </li>
 
     <li class="tools__item">
       <label class="button tools-btn set-line-width-btn">
-        line width 
+        line width
         <input type="number" class="tools__input" value="2" min="1" max="10" />
       </label>
     </li>
@@ -33,23 +27,31 @@
     <li class="tools__item">
       <label class="button tools-btn set-color-btn">
         color
-        <input type="color" class="tools__input"/>
+        <input type="color" class="tools__input" />
       </label>
+    </li>
+
+    <li class="tools__item undo-btn">
+      <button class="button tools-btn">
+        <svg width="24" height="24">
+          <use href="#undo-icon" />
+        </svg>
+      </button>
     </li>
   </ul>
 
   <ul class="page-main__draw-tools list">
-
     <li class="draw-tools__item">
-      <button data-tool="brush" class="button draw-tools__button draw-tools__button--selected">
+      <button
+        data-tool="brush"
+        class="button draw-tools__button draw-tools__button--selected"
+      >
         brush
       </button>
     </li>
 
     <li class="draw-tools__item">
-      <button data-tool="line" class="button draw-tools__button">
-        line
-      </button>
+      <button data-tool="line" class="button draw-tools__button">line</button>
     </li>
 
     <li class="draw-tools__item">
@@ -67,13 +69,13 @@
     <li class="draw-tools__item">
       <label class="button draw-tools__button eraser-label">
         eraser
-        <input type="checkbox" class="visually-hidden"/>
+        <input type="checkbox" class="visually-hidden" />
       </label>
     </li>
 
     <li class="draw-tools__item">
       <button data-clear="clear" class="button draw-tools__button">
-        clear 
+        clear
       </button>
     </li>
   </ul>
@@ -81,5 +83,4 @@
   <div class="canvas-container">
     <!-- canvas here -->
   </div>
- 
 </main>

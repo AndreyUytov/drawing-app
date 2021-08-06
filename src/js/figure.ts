@@ -32,15 +32,11 @@ abstract class AbstractBrush implements Shape {
     this.pointer(canvas, evt, shiftX, shiftY)
 
     let onCanvasMove = (evt: PointerEvent) => {
-      console.log('brush move')
-
       canvas.clearContext()
       this.pointer(canvas, evt, shiftX, shiftY)
     }
 
     let onCanvasOut = (evt: PointerEvent) => {
-      console.log('out brush')
-
       canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
       canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
       canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
@@ -150,15 +146,11 @@ abstract class StandartShape implements Shape {
     this.pointer(canvas, evt, shiftX, shiftY)
 
     let onCanvasMove = (evt: PointerEvent) => {
-      console.log('shape move')
-
       canvas.clearContext()
       this.pointer(canvas, evt, shiftX, shiftY)
     }
 
     let onCanvasOut = (evt: PointerEvent) => {
-      console.log('out')
-
       canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
       canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
       canvas.$canvas.removeEventListener('pointerout', onCanvasOut)

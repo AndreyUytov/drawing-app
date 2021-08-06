@@ -1,4 +1,8 @@
-import { Shape, Brush, CanvasLine } from './figure'
+import { Shape, Brush } from './figure'
+import Snapshot from './snapshot'
+
+import pic from './../images/01.png'
+
 export class Canvas {
   private canvas: HTMLCanvasElement
   private fon: HTMLCanvasElement
@@ -10,6 +14,8 @@ export class Canvas {
   private shape: Shape
   private width: number
   private height: number
+
+  makeBackupCommand: () => void
 
   constructor(canvasContainer: HTMLElement) {
     this.canvas = document.createElement('canvas')
@@ -158,6 +164,29 @@ export class Canvas {
 
   private onCanvasPointerDown = (evt: PointerEvent) => {
     evt.preventDefault()
+    this.makeBackupCommand()
     this.shape.draw(this, evt)
+  }
+
+  async createSnapshot() {
+    let data = this.fon.toDataURL()
+    let img = new Image()
+    img.src = data
+
+    const backup = await new Promise((res: (val: Snapshot) => void) => {
+      img.onload = () => {
+        let snapShot = new Snapshot(this, img)
+        res(snapShot)
+      }
+    })
+    return backup
+  }
+
+  restore(data: HTMLImageElement) {
+    this.clearCanvas()
+    this.fonContext.save()
+    this.fonContext.globalCompositeOperation = 'source-over'
+    this.drawContext.drawImage(data, 0, 0)
+    this.fonContext.restore()
   }
 }

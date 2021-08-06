@@ -1,54 +1,52 @@
-import {
-  Canvas
-} from './canvas'
+import { Canvas } from './canvas'
+
+import { Shape, CanvasCircle, CanvasLine, Brush, CanvasRect } from './figure'
 
 import {
-  Shape,
-  CanvasCircle,
-  CanvasLine,
-  Brush,
-  CanvasRect
-} from './figure'
-
-import { Command,
+  Command,
   SetColorCommand,
   SetlineWidthCommand,
-  InsertFonCommand, 
+  InsertFonCommand,
   SaveAsFileCommand,
   SaveToBufferCommand,
   SetDrawToolsCommand,
   ClearCanvasCommand,
-  ToogleEraserCommand
+  ToogleEraserCommand,
+  MakeBackupCommand,
+  UndoCommand,
 } from './command'
 
 import { UserInterface } from './user-interface'
+import Snapshot from './snapshot'
 
 interface Imap {
-  [key:string]: Shape 
+  [key: string]: Shape
 }
 
 const mapToolToShape: Imap = {
   brush: new Brush(),
   line: new CanvasLine(),
   circle: new CanvasCircle(),
-  rectangle: new CanvasRect()
+  rectangle: new CanvasRect(),
 }
 
 export class App {
   private canvas: Canvas
   private UI: UserInterface
-  constructor() {       
-    this.canvas =  new Canvas(document.querySelector('.canvas-container'))
+  private history: Snapshot[]
+  constructor() {
+    this.canvas = new Canvas(document.querySelector('.canvas-container'))
     this.UI = new UserInterface()
+    this.history = []
 
     this.setListenersUI()
   }
 
-  private executeCommand (c: Command) {
+  private executeCommand(c: Command) {
     c.execute()
   }
 
-  private setColor (value: string) {
+  private setColor(value: string) {
     this.executeCommand(new SetColorCommand(this.canvas, value))
   }
 
@@ -60,17 +58,20 @@ export class App {
     this.executeCommand(new InsertFonCommand(this.canvas, value))
   }
 
-  private copyToClipBoard (resolve: (reason:void) => void, reject: (reason:void) => void) {
+  private copyToClipBoard(
+    resolve: (reason: void) => void,
+    reject: (reason: void) => void
+  ) {
     this.executeCommand(new SaveToBufferCommand(this.canvas, resolve, reject))
   }
 
-  private saveAsFile () {
+  private saveAsFile() {
     this.executeCommand(new SaveAsFileCommand(this.canvas))
   }
 
-  private setTool (tool:string) {
+  private setTool(tool: string) {
     let shape = mapToolToShape[tool]
-    if(!shape) {
+    if (!shape) {
       alert(`That shape ${tool} not exist!`)
       return false
     }
@@ -87,9 +88,16 @@ export class App {
     this.executeCommand(new ToogleEraserCommand(this.canvas, value))
   }
 
-  private setListenersUI () {
+  private makeBackup() {
+    this.executeCommand(new MakeBackupCommand(this.canvas, this.history))
+  }
 
-    this.UI.setColorBtn.setCommand((v:string) => this.setColor(v))
+  private undo() {
+    this.executeCommand(new UndoCommand(this.canvas, this.history))
+  }
+
+  private setListenersUI() {
+    this.UI.setColorBtn.setCommand((v: string) => this.setColor(v))
 
     this.UI.setLineWidthBtn.setCommand((v: number) => this.setLineWidth(v))
 
@@ -97,17 +105,31 @@ export class App {
 
     window.addEventListener('paste', (evt: ClipboardEvent) => {
       let items = evt.clipboardData.files
-      for(let i = 0; i < items.length; i++) {
-        if(/image/.test(items[i].type)) {
+      for (let i = 0; i < items.length; i++) {
+        if (/image/.test(items[i].type)) {
           this.setBackgroundImage(items[i])
         }
       }
     })
 
     this.UI.saveAsFileBtn.setCommand(() => this.saveAsFile())
-    this.UI.saveToBufferBtn.setCommand(() => this.copyToClipBoard(()=>alert('copy to clipboard!'), () => alert('Not support! Use Chrome browser for copy to buffer!')))
-    this.UI.setDrawToolBtn.setCommand((tool:string) => this.setTool(tool))
+    this.UI.saveToBufferBtn.setCommand(() =>
+      this.copyToClipBoard(
+        () => alert('copy to clipboard!'),
+        () => alert('Not support! Use Chrome browser for copy to buffer!')
+      )
+    )
+    this.UI.setDrawToolBtn.setCommand((tool: string) => this.setTool(tool))
+    this.UI.undoBtn.setCommand(() => this.undo())
     this.UI.clearCanvasBtn.setCommand(() => this.clearCanvas())
-    this.UI.eraserToogleBtn.setCommand((value: boolean) => this.toogleEraser(value))
+    this.UI.eraserToogleBtn.setCommand((value: boolean) =>
+      this.toogleEraser(value)
+    )
+    this.canvas.makeBackupCommand = () => this.makeBackup()
+    document.addEventListener('keydown', (evt) => {
+      if ((evt.code === 'KeyZ' && evt.ctrlKey) || evt.metaKey) {
+        this.undo()
+      }
+    })
   }
 }

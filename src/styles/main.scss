@@ -71,6 +71,10 @@
   }
 }
 
+.undo-btn {
+  width: 32px;
+}
+
 .page-main__draw-tools {
   grid-row: draw-tools;
 
@@ -157,7 +161,7 @@
   .draw-tools__item {
     width: 100%;
     height: 46px;
-  
+
     &:not(:last-of-type) {
       margin-right: 0px;
       margin-bottom: 12px;
