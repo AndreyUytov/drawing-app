@@ -90,10 +90,13 @@ export class App {
 
   private makeBackup() {
     this.executeCommand(new MakeBackupCommand(this.canvas, this.history))
+    console.log(this.history);
+    
   }
 
   private undo() {
     this.executeCommand(new UndoCommand(this.canvas, this.history))
+    console.log(this.history);
   }
 
   private setListenersUI() {

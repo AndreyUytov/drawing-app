@@ -107,7 +107,7 @@ export class MakeBackupCommand extends Command {
     this.history = history
   }
   execute() {
-    this.canvas.createSnapshot().then((value) => {
+    this.canvas.createSnapshot().then((value) => {     
       this.history.push(value)
     })
   }

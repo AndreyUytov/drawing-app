@@ -1,8 +1,5 @@
 import { Shape, Brush } from './figure'
 import Snapshot from './snapshot'
-
-import pic from './../images/01.png'
-
 export class Canvas {
   private canvas: HTMLCanvasElement
   private fon: HTMLCanvasElement
@@ -15,7 +12,7 @@ export class Canvas {
   private width: number
   private height: number
 
-  makeBackupCommand: () => void
+  private makeBackup:() => void
 
   constructor(canvasContainer: HTMLElement) {
     this.canvas = document.createElement('canvas')
@@ -44,6 +41,10 @@ export class Canvas {
 
     this.canvas.addEventListener('pointerdown', this.onCanvasPointerDown)
     this.canvas.addEventListener('pointerover', this.onCanvasPointerOver)
+  }
+
+  set makeBackupCommand(makeBackup: () => void) {
+    this.makeBackup = makeBackup
   }
 
   private setCanvasSize() {
@@ -164,8 +165,7 @@ export class Canvas {
 
   private onCanvasPointerDown = (evt: PointerEvent) => {
     evt.preventDefault()
-    this.makeBackupCommand()
-    this.shape.draw(this, evt)
+    this.shape.draw(this, evt, this.makeBackup)
   }
 
   async createSnapshot() {
@@ -178,7 +178,7 @@ export class Canvas {
         let snapShot = new Snapshot(this, img)
         res(snapShot)
       }
-    })
+    })    
     return backup
   }
 
