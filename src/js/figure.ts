@@ -1,12 +1,11 @@
 import { Canvas } from './canvas'
 
 export interface Shape {
-  draw(canvas: Canvas, evt: PointerEvent, makeBackup:()=>void): void
+  draw(canvas: Canvas, evt: PointerEvent, makeBackup: () => void): void
   drawPointer(canvas: Canvas, evt: PointerEvent): void
 }
 
 abstract class AbstractBrush implements Shape {
-
   pointer(canvas: Canvas, evt: PointerEvent, shiftX: number, shiftY: number) {
     let dislocationX = evt.clientX - shiftX
     let dislocationY = evt.clientY - shiftY
@@ -60,7 +59,7 @@ abstract class AbstractBrush implements Shape {
     canvas.$canvas.addEventListener('pointerup', onCanvasUp)
   }
 
-  draw(canvas: Canvas, evt: PointerEvent, makeBackup: ()=>void) {
+  draw(canvas: Canvas, evt: PointerEvent, makeBackup: () => void) {
     evt.preventDefault()
 
     let resetListeners = () => {
@@ -86,11 +85,13 @@ abstract class AbstractBrush implements Shape {
 
     let onCanvasPointerUp = (evt: PointerEvent) => {
       evt.preventDefault()
+
       resetListeners()
     }
 
     let onCanvasPointerOut = () => {
       evt.preventDefault()
+
       resetListeners()
     }
 
@@ -109,7 +110,6 @@ export class Brush extends AbstractBrush {
   }
 }
 abstract class StandartShape implements Shape {
-
   pointer(canvas: Canvas, evt: PointerEvent, shiftX: number, shiftY: number) {
     let dislocationX = evt.clientX - shiftX
     let dislocationY = evt.clientY - shiftY
@@ -177,7 +177,7 @@ abstract class StandartShape implements Shape {
     canvas.$canvas.addEventListener('pointerout', onCanvasOut)
   }
 
-  draw(canvas: Canvas, evt: PointerEvent, makeBackup:()=>void) {
+  draw(canvas: Canvas, evt: PointerEvent, makeBackup: () => void) {
     evt.preventDefault()
 
     let previewContext = canvas.previewContext
@@ -218,9 +218,7 @@ abstract class StandartShape implements Shape {
 
     let onCanvasPointerUp = (evt: PointerEvent) => {
       evt.preventDefault()
-
       makeBackup()
-
       this.drawShape(
         context,
         startX,

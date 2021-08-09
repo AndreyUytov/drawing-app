@@ -8,7 +8,7 @@ export abstract class Command {
     this.canvas = canvas
   }
 
-  abstract execute(): void
+  abstract execute(): void | boolean | Snapshot
 }
 
 export class SetColorCommand extends Command {
@@ -101,28 +101,18 @@ export class ToogleEraserCommand extends Command {
 }
 
 export class MakeBackupCommand extends Command {
-  private history: Snapshot[]
-  constructor(canvas: Canvas, history: Snapshot[]) {
-    super(canvas)
-    this.history = history
-  }
   execute() {
-    this.canvas.createSnapshot().then((value) => {     
-      this.history.push(value)
-    })
+    return this.canvas.createSnapshot()
   }
 }
 
 export class UndoCommand extends Command {
-  private history: Snapshot[]
-  constructor(canvas: Canvas, history: Snapshot[]) {
+  private backup: Snapshot
+  constructor(canvas: Canvas, backup: Snapshot) {
     super(canvas)
-    this.history = history
+    this.backup = backup
   }
   execute() {
-    let backup = this.history.pop()
-    if (backup) {
-      backup.restore()
-    }
+    this.backup.restore()
   }
 }

@@ -12,7 +12,7 @@ export class Canvas {
   private width: number
   private height: number
 
-  private makeBackup:() => void
+  private makeBackup: () => void
 
   constructor(canvasContainer: HTMLElement) {
     this.canvas = document.createElement('canvas')
@@ -168,21 +168,16 @@ export class Canvas {
     this.shape.draw(this, evt, this.makeBackup)
   }
 
-  async createSnapshot() {
-    let data = this.fon.toDataURL()
-    let img = new Image()
-    img.src = data
+  createSnapshot() {
+    let canvasBackup = document.createElement('canvas')
+    canvasBackup.width = this.width
+    canvasBackup.height = this.height
+    canvasBackup.getContext('2d').drawImage(this.fon, 0, 0)
 
-    const backup = await new Promise((res: (val: Snapshot) => void) => {
-      img.onload = () => {
-        let snapShot = new Snapshot(this, img)
-        res(snapShot)
-      }
-    })    
-    return backup
+    return new Snapshot(this, canvasBackup)
   }
 
-  restore(data: HTMLImageElement) {
+  restore(data: HTMLCanvasElement) {
     this.clearCanvas()
     this.fonContext.save()
     this.fonContext.globalCompositeOperation = 'source-over'

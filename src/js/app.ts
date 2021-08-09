@@ -43,7 +43,11 @@ export class App {
   }
 
   private executeCommand(c: Command) {
-    c.execute()
+    let result = c.execute()
+
+    if (result instanceof Snapshot) {
+      this.history.push(result)
+    }
   }
 
   private setColor(value: string) {
@@ -89,14 +93,16 @@ export class App {
   }
 
   private makeBackup() {
-    this.executeCommand(new MakeBackupCommand(this.canvas, this.history))
-    console.log(this.history);
-    
+    this.executeCommand(new MakeBackupCommand(this.canvas))
+    console.log(this.history)
   }
 
   private undo() {
-    this.executeCommand(new UndoCommand(this.canvas, this.history))
-    console.log(this.history);
+    let backup = this.history.pop()
+    if (backup) {
+      this.executeCommand(new UndoCommand(this.canvas, backup))
+    }
+    console.log(this.history)
   }
 
   private setListenersUI() {

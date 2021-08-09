@@ -1,9 +1,9 @@
 import { Canvas } from './canvas'
 
 export default class Snapshot {
-  private data: HTMLImageElement
+  private data: HTMLCanvasElement
   private canvas: Canvas
-  constructor(canvas: Canvas, data: HTMLImageElement) {
+  constructor(canvas: Canvas, data: HTMLCanvasElement) {
     this.data = data
     this.canvas = canvas
   }
