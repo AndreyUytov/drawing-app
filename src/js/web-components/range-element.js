@@ -1,7 +1,55 @@
 class RangeElement extends HTMLElement {
   constructor() {
     super()
+    this.onTogglePointerDown = this.onTogglePointerDown.bind(this)
     this.attachShadow({ mode: 'open' })
+  }
+
+  get togglePosition() {
+    return this._currentTogglePosition
+  }
+
+  set togglePosition(newPosition) {
+    if (newPosition <= -this.centerToggle) {
+      this._currentTogglePosition = -this.centerToggle
+    } else if (newPosition >= this.widthBar - this.centerToggle) {
+      this._currentTogglePosition = this.widthBar - this.centerToggle
+    } else {
+      this._currentTogglePosition = newPosition
+    }
+    this.toggle.style.transform = `translateX(${this._currentTogglePosition}px)`
+  }
+
+  get currentValueRange() {
+    return (
+      (this.togglePosition + this.centerToggle) * this.step +
+      +this.getAttribute('min-value')
+    )
+  }
+
+  onTogglePointerDown(evt) {
+    this.toggle.setPointerCapture(evt.pointerId)
+    let shiftX = evt.clientX - this.toggle.getBoundingClientRect().left
+
+    let pointerMove = (evt) => {
+      let newPosition = evt.pageX - this.leftEdge - shiftX
+      this.togglePosition = newPosition
+
+      this.dispatchEvent(
+        new CustomEvent('change-range-value', {
+          bubbles: true,
+          detail: this.currentValueRange,
+        })
+      )
+    }
+
+    let pointerUp = () => {
+      this.toggle.removeEventListener('pointermove', pointerMove)
+      this.toggle.removeEventListener('pointerup', pointerUp)
+    }
+    this.toggle.addEventListener('pointermove', pointerMove)
+
+    this.toggle.addEventListener('pointerup', pointerUp)
   }
 
   connectedCallback() {
@@ -17,62 +65,26 @@ class RangeElement extends HTMLElement {
     this.widthBar = this.bar.getBoundingClientRect().width
     this.leftEdge = this.bar.getBoundingClientRect().left
     this.centerToggle = this.toggle.getBoundingClientRect().width / 2
-    let newPosition =
+    let initialTogglePosition =
       +this.getAttribute('current-value') / this.step - this.centerToggle
 
-    this.toggle.style.transform = `translateX(${newPosition}px)`
+    this.togglePosition = initialTogglePosition
 
-    this.toggle.addEventListener('pointerdown', (evt) => {
-      this.toggle.setPointerCapture(evt.pointerId)
-      let shiftX = evt.clientX - this.toggle.getBoundingClientRect().left
-
-      let moveAt = (evt) => {
-        newPosition = evt.pageX - this.leftEdge - shiftX
-
-        if (newPosition <= -this.centerToggle) {
-          newPosition = -this.centerToggle
-        }
-
-        if (newPosition >= this.widthBar - this.centerToggle) {
-          newPosition = this.widthBar - this.centerToggle
-        }
-        this.toggle.style.transform = `translateX(${newPosition}px)`
-      }
-
-      let pointerMove = (evt) => {
-        moveAt(evt)
-      }
-
-      let pointerUp = () => {
-        this.currentPosition = (newPosition + this.centerToggle) * this.step
-
-        this.dispatchEvent(
-          new CustomEvent('change-range-value', {
-            bubbles: true,
-            detail: this.currentPosition,
-          })
-        )
-        this.toggle.removeEventListener('pointermove', pointerMove)
-        this.toggle.removeEventListener('pointerup', pointerUp)
-      }
-      this.toggle.addEventListener('pointermove', pointerMove)
-
-      this.toggle.addEventListener('pointerup', pointerUp)
-    })
+    this.toggle.addEventListener('pointerdown', this.onTogglePointerDown)
   }
 
-  disconnectedCallback() {}
+  disconnectedCallback() {
+    this.toggle.removeEventListener('pointerdown', this.onTogglePointerDown)
+  }
 
   static get observedAttributes() {
-    return ['current-value', 'max-value', 'min-value']
+    return ['current-value']
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'current-value') {
       if (this.toggle) {
-        this.toggle.style.transform = `translateX(${
-          +newValue / this.step - this.centerToggle
-        }px)`
+        this.togglePosition = +newValue / this.step - this.centerToggle
       }
     }
   }
@@ -132,10 +144,10 @@ customElements.define('range-element', RangeElement)
 
 let ran = document.querySelector('.range')
 ran.addEventListener('change-range-value', (evt) => {
-  console.log(evt.detail, 'from listener')
+  console.log(Math.round(evt.detail), 'from listener', evt.detail)
 })
 
 let rangeElem = ran.querySelector('range-element')
 setTimeout(() => {
-  rangeElem.setAttribute('current-value', 10)
+  rangeElem.setAttribute('current-value', 24)
 }, 1000)
