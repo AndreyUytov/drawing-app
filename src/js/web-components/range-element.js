@@ -44,6 +44,12 @@ class RangeElement extends HTMLElement {
     }
 
     let pointerUp = () => {
+      this.dispatchEvent(
+        new CustomEvent('end-change-range-value', {
+          bubbles: true,
+          detail: this.currentValueRange,
+        })
+      )
       this.toggle.removeEventListener('pointermove', pointerMove)
       this.toggle.removeEventListener('pointerup', pointerUp)
     }
@@ -110,7 +116,7 @@ class RangeElement extends HTMLElement {
 
         #bar {
           width: 100%;
-          height: 4px;
+          height: 6px;
 
           display: flex;
           align-items: center;
@@ -127,6 +133,8 @@ class RangeElement extends HTMLElement {
           background-color: green;
 
           border-radius: 50%;
+
+          cursor: pointer;
         }
 
       </style>
@@ -141,13 +149,3 @@ class RangeElement extends HTMLElement {
 }
 
 customElements.define('range-element', RangeElement)
-
-let ran = document.querySelector('.range')
-ran.addEventListener('change-range-value', (evt) => {
-  console.log(Math.round(evt.detail), 'from listener', evt.detail)
-})
-
-let rangeElem = ran.querySelector('range-element')
-setTimeout(() => {
-  rangeElem.setAttribute('current-value', 24)
-}, 1000)

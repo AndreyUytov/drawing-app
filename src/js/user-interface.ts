@@ -130,23 +130,70 @@ class setDrawToolBtn extends Btn {
 }
 
 class SetColorBtn extends Btn {
+  private rangeBtn: HTMLButtonElement
+  private rangeBtnContent: HTMLElement
+  private range: HTMLElement
+  private rangeRed: RangeElement
+  private rangeGreen: RangeElement
+  private rangeBlue: RangeElement
+  private rangeAlfa: RangeElement
+  constructor(btn: HTMLElement) {
+    super(btn)
+
+    this.rangeBtn = this.btn.querySelector('.range-btn')
+    this.rangeBtnContent = this.btn.querySelector('.range-btn__content')
+    this.range = this.btn.querySelector('.range-btn__range')
+
+    const ranges = Array.from(
+      this.btn.querySelectorAll('range-element')
+    ) as RangeElement[]
+    this.rangeRed = ranges[0]
+    this.rangeGreen = ranges[1]
+    this.rangeBlue = ranges[2]
+    this.rangeAlfa = ranges[3]
+
+    this.rangeBtn.addEventListener('click', () => {
+      this.range.classList.toggle('range-btn__range--active')
+    })
+  }
   setCommand(cb: any) {
-    this.btn.addEventListener('input', (evt) => {
-      let target = evt.target as HTMLInputElement
-      if (target.tagName !== 'INPUT') return
-      let value = target.value
-      cb(value)
+    this.btn.addEventListener('end-change-range-value', (evt: CustomEvent) => {
+      this.range.classList.remove('range-btn__range--active')
+
+      let red = Math.round(this.rangeRed.currentValueRange)
+      let green = Math.round(this.rangeGreen.currentValueRange)
+      let blue = Math.round(this.rangeBlue.currentValueRange)
+      let alfa = this.rangeAlfa.currentValueRange
+      this.rangeBtnContent.style.background = `rgba(${red}, ${green}, ${blue}, ${alfa})`
+
+      console.log(`rgba(${red}, ${green}, ${blue}, ${alfa})`)
+
+      cb(`rgba(${red}, ${green}, ${blue}, ${alfa})`)
     })
   }
 }
 
 class SetLineWidthBtn extends Btn {
+  private rangeBtn: HTMLButtonElement
+  private rangeBtnContent: HTMLElement
+  private range: HTMLElement
+  constructor(btn: HTMLElement) {
+    super(btn)
+
+    this.rangeBtn = this.btn.querySelector('.range-btn')
+    this.rangeBtnContent = this.btn.querySelector('.range-btn__content')
+    this.range = this.btn.querySelector('.range-btn__range')
+    this.rangeBtn.addEventListener('click', () => {
+      this.range.classList.toggle('range-btn__range--active')
+    })
+  }
   setCommand(cb: any) {
-    this.btn.addEventListener('input', (evt) => {
-      let target = evt.target as HTMLInputElement
-      if (target.tagName !== 'INPUT') return
-      let value = +target.value
-      cb(value)
+    this.btn.addEventListener('change-range-value', (evt: CustomEvent) => {
+      this.rangeBtnContent.textContent = `${Math.round(evt.detail)}`
+    })
+    this.btn.addEventListener('end-change-range-value', (evt: CustomEvent) => {
+      this.range.classList.remove('range-btn__range--active')
+      cb(Math.round(evt.detail))
     })
   }
 }
