@@ -1,5 +1,6 @@
 import './styles/index.scss'
 import './images/svg/svg-sprite.js'
+import './js/web-components/range-element.js'
 
 import { App } from './js/app'
 
