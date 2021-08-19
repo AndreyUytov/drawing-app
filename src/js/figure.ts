@@ -46,11 +46,13 @@ abstract class AbstractBrush implements Shape {
     let onCanvasDown = (evt: PointerEvent) => {
       canvas.$canvas.removeEventListener('pointerdown', onCanvasDown)
       canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
+      canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
     }
 
     let onCanvasUp = () => {
       canvas.$canvas.addEventListener('pointerdown', onCanvasDown)
       canvas.$canvas.addEventListener('pointerout', onCanvasOut)
+      canvas.$canvas.addEventListener('pointermove', onCanvasMove)
     }
 
     canvas.$canvas.addEventListener('pointermove', onCanvasMove)
@@ -61,8 +63,13 @@ abstract class AbstractBrush implements Shape {
 
   draw(canvas: Canvas, evt: PointerEvent, makeBackup: () => void) {
     evt.preventDefault()
+    let context = canvas.drawContext
+    let previewContext = canvas.previewContext
 
     let resetListeners = () => {
+      canvas.clearContext()
+      previewContext.restore()
+      context.stroke()
       canvas.$canvas.removeEventListener('pointerout', onCanvasPointerOut)
       canvas.$canvas.removeEventListener('pointermove', onCanvasPointerMove)
       canvas.$canvas.removeEventListener('pointerup', onCanvasPointerUp)
@@ -71,21 +78,24 @@ abstract class AbstractBrush implements Shape {
     let shiftX = canvas.$canvas.getBoundingClientRect().left
     let shiftY = canvas.$canvas.getBoundingClientRect().top
 
-    let context = canvas.drawContext
     context.moveTo(evt.clientX - shiftX, evt.clientY - shiftY)
     context.beginPath()
+    previewContext.save()
+    previewContext.setLineDash([0])
+    previewContext.beginPath()
+    previewContext.moveTo(evt.clientX - shiftX, evt.clientY - shiftY)
 
     makeBackup()
 
     let onCanvasPointerMove = (evt: PointerEvent) => {
       evt.preventDefault()
-
+      this.drawShape(previewContext, evt.clientX - shiftX, evt.clientY - shiftY)
+      previewContext.stroke()
       this.drawShape(context, evt.clientX - shiftX, evt.clientY - shiftY)
     }
 
     let onCanvasPointerUp = (evt: PointerEvent) => {
       evt.preventDefault()
-
       resetListeners()
     }
 
@@ -106,7 +116,6 @@ abstract class AbstractBrush implements Shape {
 export class Brush extends AbstractBrush {
   drawShape(ctx: CanvasRenderingContext2D, x: number, y: number) {
     ctx.lineTo(x, y)
-    ctx.stroke()
   }
 }
 abstract class StandartShape implements Shape {
@@ -189,7 +198,15 @@ abstract class StandartShape implements Shape {
     let startX = evt.clientX - shiftX
     let startY = evt.clientY - shiftY
 
-    let resetListeners = () => {
+    let resetListeners = (evt: PointerEvent) => {
+      makeBackup()
+      this.drawShape(
+        context,
+        startX,
+        startY,
+        evt.clientX - shiftX,
+        evt.clientY - shiftY
+      )
       canvas.clearContext()
 
       canvas.$canvas.removeEventListener('pointerout', onCanvasPointerOut)
@@ -213,21 +230,13 @@ abstract class StandartShape implements Shape {
     let onCanvasPointerOut = (evt: PointerEvent) => {
       evt.preventDefault()
 
-      resetListeners()
+      resetListeners(evt)
     }
 
     let onCanvasPointerUp = (evt: PointerEvent) => {
       evt.preventDefault()
-      makeBackup()
-      this.drawShape(
-        context,
-        startX,
-        startY,
-        evt.clientX - shiftX,
-        evt.clientY - shiftY
-      )
 
-      resetListeners()
+      resetListeners(evt)
     }
 
     canvas.$canvas.addEventListener('pointerup', onCanvasPointerUp)
