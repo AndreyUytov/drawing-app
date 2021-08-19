@@ -28,10 +28,11 @@ class RangeElement extends HTMLElement {
   }
 
   onTogglePointerDown(evt) {
-    this.toggle.setPointerCapture(evt.pointerId)
+    evt.preventDefault()
     let shiftX = evt.clientX - this.toggle.getBoundingClientRect().left
 
     let pointerMove = (evt) => {
+      evt.preventDefault()
       let newPosition = evt.pageX - this.leftEdge - shiftX
       this.togglePosition = newPosition
 
@@ -44,18 +45,18 @@ class RangeElement extends HTMLElement {
     }
 
     let pointerUp = () => {
+      evt.preventDefault()
       this.dispatchEvent(
         new CustomEvent('end-change-range-value', {
           bubbles: true,
           detail: this.currentValueRange,
         })
       )
-      this.toggle.removeEventListener('pointermove', pointerMove)
-      this.toggle.removeEventListener('pointerup', pointerUp)
+      document.removeEventListener('pointermove', pointerMove)
+      document.removeEventListener('pointerup', pointerUp)
     }
-    this.toggle.addEventListener('pointermove', pointerMove)
-
-    this.toggle.addEventListener('pointerup', pointerUp)
+    document.addEventListener('pointermove', pointerMove)
+    document.addEventListener('pointerup', pointerUp)
   }
 
   connectedCallback() {
@@ -63,6 +64,7 @@ class RangeElement extends HTMLElement {
 
     this.bar = this.shadowRoot.getElementById('bar')
     this.toggle = this.shadowRoot.getElementById('toggle')
+    this.toggle.ondragstart = () => false
 
     this.step = Math.abs(
       (+this.getAttribute('max-value') - +this.getAttribute('min-value')) /
@@ -135,6 +137,7 @@ class RangeElement extends HTMLElement {
           border-radius: 50%;
 
           cursor: pointer;
+          touch-action: none;
         }
 
       </style>

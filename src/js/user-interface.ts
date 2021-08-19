@@ -157,18 +157,30 @@ class SetColorBtn extends Btn {
     })
   }
   setCommand(cb: any) {
+    let timer: ReturnType<typeof setTimeout>
+
     this.btn.addEventListener('end-change-range-value', (evt: CustomEvent) => {
-      this.range.classList.remove('range-btn__range--active')
+      timer = setTimeout(() => {
+        this.range.classList.remove('range-btn__range--active')
+      }, 2000)
 
       let red = Math.round(this.rangeRed.currentValueRange)
       let green = Math.round(this.rangeGreen.currentValueRange)
       let blue = Math.round(this.rangeBlue.currentValueRange)
       let alfa = this.rangeAlfa.currentValueRange
+
       this.rangeBtnContent.style.background = `rgba(${red}, ${green}, ${blue}, ${alfa})`
 
-      console.log(`rgba(${red}, ${green}, ${blue}, ${alfa})`)
-
       cb(`rgba(${red}, ${green}, ${blue}, ${alfa})`)
+    })
+
+    this.btn.addEventListener('change-range-value', (evt: CustomEvent) => {
+      clearTimeout(timer)
+      let red = Math.round(this.rangeRed.currentValueRange)
+      let green = Math.round(this.rangeGreen.currentValueRange)
+      let blue = Math.round(this.rangeBlue.currentValueRange)
+      let alfa = this.rangeAlfa.currentValueRange
+      this.rangeBtnContent.style.background = `rgba(${red}, ${green}, ${blue}, ${alfa})`
     })
   }
 }
