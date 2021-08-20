@@ -1,8 +1,105 @@
 import { Canvas } from './canvas'
 
 export interface Shape {
-  draw(canvas: Canvas, evt: PointerEvent, makeBackup: () => void): void
+  draw(canvas: Canvas, evt: PointerEvent, makeBackup?: () => void): void
   drawPointer(canvas: Canvas, evt: PointerEvent): void
+}
+
+export class PixelColorDetecter implements Shape {
+  _color: string
+  constructor() {
+    this._color = 'black'
+  }
+
+  set color(color: string) {
+    this._color = color
+  }
+
+  get color() {
+    return this._color
+  }
+  pointer(canvas: Canvas, evt: PointerEvent, shiftX: number, shiftY: number) {
+    let dislocationX = evt.clientX - shiftX
+    let dislocationY = evt.clientY - shiftY
+    let context = canvas.previewContext
+
+    context.save()
+    context.strokeStyle = 'black'
+    context.lineWidth = 1
+    context.setLineDash([])
+
+    context.beginPath()
+    context.moveTo(dislocationX, dislocationY)
+    context.lineTo(dislocationX, dislocationY + 10)
+    context.closePath()
+    context.stroke()
+
+    context.beginPath()
+    context.shadowOffsetX = 2
+    context.shadowOffsetY = 2
+    context.shadowBlur = 2
+    context.shadowColor = 'rgba(0,0,0,0.5)'
+    context.fillStyle = this.color
+    context.arc(dislocationX, dislocationY + 20, 10, 0, 360)
+    context.fill()
+    context.stroke()
+
+    context.restore()
+  }
+
+  drawPointer(canvas: Canvas, evt: PointerEvent) {
+    evt.preventDefault()
+    let shiftX = canvas.$canvas.getBoundingClientRect().left
+    let shiftY = canvas.$canvas.getBoundingClientRect().top
+
+    canvas.clearContext()
+    this.pointer(canvas, evt, shiftX, shiftY)
+
+    let onCanvasMove = (evt: PointerEvent) => {
+      canvas.clearContext()
+      this.pointer(canvas, evt, shiftX, shiftY)
+    }
+
+    let onCanvasOut = (evt: PointerEvent) => {
+      canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
+      canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
+    }
+
+    canvas.$canvas.addEventListener('pointermove', onCanvasMove)
+    canvas.$canvas.addEventListener('pointerout', onCanvasOut)
+  }
+
+  draw(canvas: Canvas, evt: PointerEvent) {
+    evt.preventDefault()
+    let shiftX = canvas.$canvas.getBoundingClientRect().left
+    let shiftY = canvas.$canvas.getBoundingClientRect().top
+
+    let pick = (x: number, y: number) => {
+      let pixel = canvas.drawContext.getImageData(x, y, 1, 1)
+      let data = pixel.data
+      let rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`
+
+      this.color = rgba
+    }
+
+    pick(evt.clientX - shiftX, evt.clientY - shiftY)
+    canvas.color = this.color
+
+    let pointerMove = (evt: PointerEvent) => {
+      evt.preventDefault()
+      pick(evt.clientX - shiftX, evt.clientY - shiftY)
+      canvas.color = this.color
+    }
+
+    let pointerUp = (evt: PointerEvent) => {
+      evt.preventDefault()
+      canvas.$canvas.removeEventListener('pointermove', pointerMove)
+      canvas.$canvas.removeEventListener('pointerup', pointerUp)
+    }
+
+    canvas.$canvas.addEventListener('pointermove', pointerMove)
+    canvas.$canvas.addEventListener('pointerup', pointerUp)
+  }
 }
 
 abstract class AbstractBrush implements Shape {

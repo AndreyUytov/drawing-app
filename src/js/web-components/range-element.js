@@ -5,6 +5,11 @@ class RangeElement extends HTMLElement {
     this.attachShadow({ mode: 'open' })
   }
 
+  setTogglePositionByValue(value) {
+    let calculatedPosition = value / this.step - this.centerToggle
+    this.togglePosition = calculatedPosition
+  }
+
   get togglePosition() {
     return this._currentTogglePosition
   }
@@ -73,10 +78,8 @@ class RangeElement extends HTMLElement {
     this.widthBar = this.bar.getBoundingClientRect().width
     this.leftEdge = this.bar.getBoundingClientRect().left
     this.centerToggle = this.toggle.getBoundingClientRect().width / 2
-    let initialTogglePosition =
-      +this.getAttribute('current-value') / this.step - this.centerToggle
 
-    this.togglePosition = initialTogglePosition
+    this.setTogglePositionByValue(+this.getAttribute('current-value'))
 
     this.toggle.addEventListener('pointerdown', this.onTogglePointerDown)
   }

@@ -1,6 +1,13 @@
 import { Canvas } from './canvas'
 
-import { Shape, CanvasCircle, CanvasLine, Brush, CanvasRect } from './figure'
+import {
+  Shape,
+  CanvasCircle,
+  CanvasLine,
+  Brush,
+  CanvasRect,
+  PixelColorDetecter,
+} from './figure'
 
 import {
   Command,
@@ -28,6 +35,7 @@ const mapToolToShape: Imap = {
   line: new CanvasLine(),
   circle: new CanvasCircle(),
   rectangle: new CanvasRect(),
+  'pixel-color': new PixelColorDetecter(),
 }
 
 export class App {
@@ -50,7 +58,18 @@ export class App {
     }
   }
 
-  private setColor(value: string) {
+  private setColor(value: {
+    red: number
+    green: number
+    blue: number
+    alfa: number
+  }) {
+    let { red, green, blue, alfa } = value
+    this.UI.setColorBtn.red = red
+    this.UI.setColorBtn.green = green
+    this.UI.setColorBtn.blue = blue
+    this.UI.setColorBtn.alfa = alfa
+
     this.executeCommand(new SetColorCommand(this.canvas, value))
   }
 
@@ -106,7 +125,10 @@ export class App {
   }
 
   private setListenersUI() {
-    this.UI.setColorBtn.setCommand((v: string) => this.setColor(v))
+    this.UI.setColorBtn.setCommand(
+      (v: { red: number; green: number; blue: number; alfa: number }) =>
+        this.setColor(v)
+    )
 
     this.UI.setLineWidthBtn.setCommand((v: number) => this.setLineWidth(v))
 

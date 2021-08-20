@@ -12,13 +12,18 @@ export abstract class Command {
 }
 
 export class SetColorCommand extends Command {
-  private color: string
-  constructor(canvas: Canvas, color: string) {
+  private color: { red: number; green: number; blue: number; alfa: number }
+  constructor(
+    canvas: Canvas,
+    color: { red: number; green: number; blue: number; alfa: number }
+  ) {
     super(canvas)
     this.color = color
   }
   execute() {
-    this.canvas.color = this.color
+    let { red, green, blue, alfa } = this.color
+    let rgba = `rgba(${red}, ${green}, ${blue}, ${alfa})`
+    this.canvas.color = rgba
   }
 }
 

@@ -5,12 +5,13 @@ export class UserInterface {
   saveToBufferBtn: StandartButton
   insertFonBtn: StandartButton
   setLineWidthBtn: StandartButton
-  setColorBtn: StandartButton
+  setColorBtn: SetColorBtn
   undoBtn: StandartButton
 
   setDrawToolBtn: StandartButton
   eraserToogleBtn: StandartButton
   clearCanvasBtn: StandartButton
+  pixelColorBtn: StandartButton
 
   constructor() {
     this.saveAsFileBtn = new SaveAsFileBtn(
@@ -156,6 +157,23 @@ class SetColorBtn extends Btn {
       this.range.classList.toggle('range-btn__range--active')
     })
   }
+
+  set red(value: number) {
+    this.rangeRed.setTogglePositionByValue(value)
+  }
+
+  set green(value: number) {
+    this.rangeGreen.setTogglePositionByValue(value)
+  }
+
+  set blue(value: number) {
+    this.rangeBlue.setTogglePositionByValue(value)
+  }
+
+  set alfa(value: number) {
+    this.rangeAlfa.setTogglePositionByValue(value)
+  }
+
   setCommand(cb: any) {
     let timer: ReturnType<typeof setTimeout>
 
@@ -171,7 +189,7 @@ class SetColorBtn extends Btn {
 
       this.rangeBtnContent.style.background = `rgba(${red}, ${green}, ${blue}, ${alfa})`
 
-      cb(`rgba(${red}, ${green}, ${blue}, ${alfa})`)
+      cb({ red, green, blue, alfa })
     })
 
     this.btn.addEventListener('change-range-value', (evt: CustomEvent) => {
