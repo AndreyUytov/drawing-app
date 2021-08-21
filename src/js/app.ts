@@ -1,4 +1,4 @@
-import { Canvas } from './canvas'
+import { Canvas, IColor } from './canvas'
 
 import {
   Shape,
@@ -58,18 +58,7 @@ export class App {
     }
   }
 
-  private setColor(value: {
-    red: number
-    green: number
-    blue: number
-    alfa: number
-  }) {
-    let { red, green, blue, alfa } = value
-    this.UI.setColorBtn.red = red
-    this.UI.setColorBtn.green = green
-    this.UI.setColorBtn.blue = blue
-    this.UI.setColorBtn.alfa = alfa
-
+  private setColor(value: IColor) {
     this.executeCommand(new SetColorCommand(this.canvas, value))
   }
 
@@ -126,9 +115,11 @@ export class App {
 
   private setListenersUI() {
     this.UI.setColorBtn.setCommand(
-      (v: { red: number; green: number; blue: number; alfa: number }) =>
+      (v: IColor) =>
         this.setColor(v)
     )
+
+    this.canvas.addListener(this.UI.setColorBtn.setColor)
 
     this.UI.setLineWidthBtn.setCommand((v: number) => this.setLineWidth(v))
 

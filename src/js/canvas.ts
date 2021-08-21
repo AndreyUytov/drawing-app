@@ -1,5 +1,12 @@
 import { Shape, Brush } from './figure'
 import Snapshot from './snapshot'
+
+export interface IColor {
+  red: number,
+  green: number,
+  blue: number,
+  alfa: number
+}
 export class Canvas {
   private canvas: HTMLCanvasElement
   private fon: HTMLCanvasElement
@@ -11,6 +18,8 @@ export class Canvas {
   private shape: Shape
   private width: number
   private height: number
+  private _color: IColor = {red: 0, green: 0, blue: 0, alfa:1}
+  private listeners: Set<any> = new Set()
 
   private makeBackup: () => void
 
@@ -41,6 +50,20 @@ export class Canvas {
 
     this.canvas.addEventListener('pointerdown', this.onCanvasPointerDown)
     this.canvas.addEventListener('pointerover', this.onCanvasPointerOver)
+  }
+
+  addListener(cb: any) {
+    this.listeners.add(cb)
+  }
+  
+  removeListener(cb: any) {
+    this.listeners.delete(cb)
+  }
+
+  private update() {
+    this.listeners.forEach((cb) => {
+      cb(this.color)
+    })
   }
 
   set makeBackupCommand(makeBackup: () => void) {
@@ -135,12 +158,18 @@ export class Canvas {
     this.shape = shape
   }
 
-  set color(color: string | CanvasGradient | CanvasPattern) {
-    this.fonContext.strokeStyle = color
+  set color(color: IColor) {
+    this._color = color
+    this.fonContext.strokeStyle = this.rgba
+    this.update()
   }
 
   get color() {
-    return this.fonContext.strokeStyle
+    return this._color
+  }
+
+  get rgba() {
+    return `rgba(${this.color.red}, ${this.color.green}, ${this.color.blue}, ${this.color.alfa})`
   }
 
   set lineWidth(value: number) {

@@ -1,4 +1,4 @@
-import { Canvas } from './canvas'
+import { Canvas, IColor } from './canvas'
 import { Shape } from './figure'
 import Snapshot from './snapshot'
 
@@ -12,18 +12,16 @@ export abstract class Command {
 }
 
 export class SetColorCommand extends Command {
-  private color: { red: number; green: number; blue: number; alfa: number }
+  private color: IColor
   constructor(
     canvas: Canvas,
-    color: { red: number; green: number; blue: number; alfa: number }
+    color: IColor
   ) {
     super(canvas)
     this.color = color
   }
   execute() {
-    let { red, green, blue, alfa } = this.color
-    let rgba = `rgba(${red}, ${green}, ${blue}, ${alfa})`
-    this.canvas.color = rgba
+    this.canvas.color = this.color
   }
 }
 

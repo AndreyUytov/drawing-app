@@ -1,4 +1,5 @@
 import { animate, makeToZero, penta, setupEndValue } from './animate'
+import { IColor } from './canvas'
 
 export class UserInterface {
   saveAsFileBtn: StandartButton
@@ -141,6 +142,8 @@ class SetColorBtn extends Btn {
   constructor(btn: HTMLElement) {
     super(btn)
 
+    this.setColor = this.setColor.bind(this)
+
     this.rangeBtn = this.btn.querySelector('.range-btn')
     this.rangeBtnContent = this.btn.querySelector('.range-btn__content')
     this.range = this.btn.querySelector('.range-btn__range')
@@ -158,20 +161,14 @@ class SetColorBtn extends Btn {
     })
   }
 
-  set red(value: number) {
-    this.rangeRed.setTogglePositionByValue(value)
-  }
+  public setColor(color: IColor) {
+    this.rangeRed.setTogglePositionByValue(color.red)
+    this.rangeGreen.setTogglePositionByValue(color.green)
+    this.rangeBlue.setTogglePositionByValue(color.blue)
+    this.rangeAlfa.setTogglePositionByValue(color.alfa)
 
-  set green(value: number) {
-    this.rangeGreen.setTogglePositionByValue(value)
-  }
+    this.rangeBtnContent.style.background = `rgba(${color.red}, ${color.green}, ${color.blue}, ${color.alfa})`
 
-  set blue(value: number) {
-    this.rangeBlue.setTogglePositionByValue(value)
-  }
-
-  set alfa(value: number) {
-    this.rangeAlfa.setTogglePositionByValue(value)
   }
 
   setCommand(cb: any) {

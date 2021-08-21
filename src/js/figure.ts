@@ -1,4 +1,4 @@
-import { Canvas } from './canvas'
+import { Canvas, IColor } from './canvas'
 
 export interface Shape {
   draw(canvas: Canvas, evt: PointerEvent, makeBackup?: () => void): void
@@ -6,19 +6,21 @@ export interface Shape {
 }
 
 export class PixelColorDetecter implements Shape {
-  _color: string
+  private _color: IColor
+  private rgba: string
   constructor() {
-    this._color = 'black'
+    this.color = {red: 0,green: 0, blue: 0, alfa: 1}
   }
 
-  set color(color: string) {
+  set color(color: IColor) {
     this._color = color
+    this.rgba = `rgba(${this.color.red}, ${this.color.green}, ${this.color.blue}, ${this.color.alfa})`
   }
 
   get color() {
     return this._color
   }
-  pointer(canvas: Canvas, evt: PointerEvent, shiftX: number, shiftY: number) {
+  pointer(canvas: Canvas, evt: PointerEvent, shiftX: number, shiftY: number, rgba: string) {
     let dislocationX = evt.clientX - shiftX
     let dislocationY = evt.clientY - shiftY
     let context = canvas.previewContext
@@ -39,7 +41,7 @@ export class PixelColorDetecter implements Shape {
     context.shadowOffsetY = 2
     context.shadowBlur = 2
     context.shadowColor = 'rgba(0,0,0,0.5)'
-    context.fillStyle = this.color
+    context.fillStyle = rgba
     context.arc(dislocationX, dislocationY + 20, 10, 0, 360)
     context.fill()
     context.stroke()
@@ -53,18 +55,25 @@ export class PixelColorDetecter implements Shape {
     let shiftY = canvas.$canvas.getBoundingClientRect().top
 
     canvas.clearContext()
-    this.pointer(canvas, evt, shiftX, shiftY)
+    this.pointer(canvas, evt, shiftX, shiftY, this.rgba)
 
     let onCanvasMove = (evt: PointerEvent) => {
       canvas.clearContext()
-      this.pointer(canvas, evt, shiftX, shiftY)
+      this.pointer(canvas, evt, shiftX, shiftY, this.rgba)
+    }
+
+    let onCanvasClick = (evt: PointerEvent) => {
+      canvas.clearContext()
+      this.pointer(canvas, evt, shiftX, shiftY, this.rgba)
     }
 
     let onCanvasOut = (evt: PointerEvent) => {
       canvas.$canvas.removeEventListener('pointerout', onCanvasOut)
       canvas.$canvas.removeEventListener('pointermove', onCanvasMove)
+      canvas.$canvas.removeEventListener('click', onCanvasClick)
     }
 
+    canvas.$canvas.addEventListener('click', onCanvasClick)
     canvas.$canvas.addEventListener('pointermove', onCanvasMove)
     canvas.$canvas.addEventListener('pointerout', onCanvasOut)
   }
@@ -77,9 +86,8 @@ export class PixelColorDetecter implements Shape {
     let pick = (x: number, y: number) => {
       let pixel = canvas.drawContext.getImageData(x, y, 1, 1)
       let data = pixel.data
-      let rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`
 
-      this.color = rgba
+      this.color = {red: data[0], green: data[1], blue: data[2],alfa: data[3] / 255}      
     }
 
     pick(evt.clientX - shiftX, evt.clientY - shiftY)
@@ -113,7 +121,7 @@ abstract class AbstractBrush implements Shape {
     context.shadowOffsetY = 2
     context.shadowBlur = 2
     context.shadowColor = 'rgba(0,0,0,0.5)'
-    context.fillStyle = canvas.color
+    context.fillStyle = canvas.rgba
     context.beginPath()
     context.arc(dislocationX, dislocationY, canvas.lineWidth / 2, 0, 360)
     context.fill()
@@ -226,7 +234,7 @@ abstract class StandartShape implements Shape {
     context.shadowOffsetY = 2
     context.shadowBlur = 2
     context.shadowColor = 'rgba(0,0,0,0.5)'
-    context.strokeStyle = canvas.color
+    context.strokeStyle = canvas.rgba
     context.lineWidth = 2
     context.setLineDash([])
 
